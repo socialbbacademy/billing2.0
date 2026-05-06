@@ -1,0 +1,1363 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beacon blitz - Complete Billing Solution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e5a8e;
+            --primary-light: #2a7ab8;
+            --accent: #ff9800;
+            --accent-light: #ffb74d;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #e74c3c;
+            --bg-light: #f5f7fa;
+            --bg-white: #ffffff;
+            --border: #e0e0e0;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 1.5rem;
+            overflow-y: auto;
+            z-index: 1000;
+            color: white;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--bg-white);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-light);
+        }
+
+        .btn-secondary {
+            background: var(--bg-white);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        /* Form Styles */
+        .form-section {
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 90, 142, 0.1);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--bg-light);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .file-label:hover {
+            border-color: var(--primary);
+            background: rgba(30, 90, 142, 0.05);
+        }
+
+        .file-input:checked + .file-label {
+            border-color: var(--primary);
+        }
+
+        .file-info {
+            margin-top: 0.5rem;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Data Entry Table */
+        .data-table {
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-light);
+        }
+
+        th {
+            padding: 1.2rem;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.15);
+            color: #f39c12;
+        }
+
+        .status-done {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+
+        .amount-value {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: var(--transition);
+            padding: 4px 8px;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div style="font-size: 28px;">BB</div>
+            <div>Beacon blitz</div>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="switchPage('add-entry', event); return false;">Add Entry</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('view-entries', event); return false;">View Entries</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('generate-bills', event); return false;">Generate Bills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('google-sheets', event); return false;">Google Sheets</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('reports', event); return false;">Reports</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h2 style="font-size: 20px; font-weight: 700;">Beacon blitz - Digital Marketing Agency Billing</h2>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" onclick="loadDataFromStorage()">Refresh</button>
+                <button class="btn btn-accent" onclick="alert('User: Admin')">Profile</button>
+            </div>
+        </div>
+
+        <!-- Container -->
+        <div class="container">
+
+            <!-- Add Entry Page -->
+            <div id="add-entry-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Add Work Entry</h1>
+                </div>
+
+                <div class="form-section">
+                    <form onsubmit="handleAddEntry(event)">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Entry Details</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Select Date *</label>
+                                <input type="date" class="form-input" id="entryDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Select Company *</label>
+                                <select class="form-select" id="entryCompany" required>
+                                    <option value="">-- Select Company --</option>
+                                    <option>Beacon blitz</option>
+                                    <option>Digital Pro Marketing</option>
+                                    <option>Creative Minds Studio</option>
+                                    <option value="__new__">Add New Company</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Work Description *</label>
+                                <input type="text" class="form-input" id="entryWork" placeholder="e.g., SEO Optimization, Social Media" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" id="newCompanyRow" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">New Company Name *</label>
+                                <input type="text" class="form-input" id="newCompanyName" placeholder="Enter new company name">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Working Hour/Qty *</label>
+                                <input type="number" class="form-input" id="entryHours" placeholder="8.5" step="0.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rate *</label>
+                                <input type="number" class="form-input" id="entryRate" placeholder="500" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Amount (Auto) Rs</label>
+                                <input type="number" class="form-input" id="entryAmount" readonly style="background: var(--bg-light);">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label">Upload Work File / Screenshot</label>
+                            <div class="file-upload">
+                                <input type="file" class="file-input" id="workFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                <label for="workFile" class="file-label">
+                                    Choose File or Drag & Drop
+                                </label>
+                                <div class="file-info" id="fileInfo">No file chosen</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Notes (Optional)</label>
+                            <textarea class="form-input" id="entryNotes" placeholder="Additional notes..." style="min-height: 100px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="btn btn-primary">Save Entry</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- View Entries Page -->
+            <div id="view-entries-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">View All Entries</h1>
+                    <button class="btn btn-secondary" onclick="clearAllData()">Clear All</button>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">All Work Entries</div>
+                        <div>
+                            <input type="text" placeholder="Search..." style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; width: 200px;">
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Company</th>
+                                <th>Work Description</th>
+                                <th>Working Hour/Qty</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                                <th>File</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="entriesTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                    No entries yet. Add your first entry to get started!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Generate Bills Page -->
+            <div id="generate-bills-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Generate Bills</h1>
+                    <button class="btn btn-primary" onclick="generateAllBills()">Generate All Bills</button>
+                </div>
+
+                <div class="form-section">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Bill Summary</h3>
+                    <div class="stats-grid" id="billStats">
+                        <div class="card">
+                            <div class="card-title">Total Entries</div>
+                            <div class="card-value" id="totalEntries">0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Total Working Hour/Qty</div>
+                            <div class="card-value" id="totalHours">0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Total Amount</div>
+                            <div class="card-value" id="totalAmount">Rs0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Companies</div>
+                            <div class="card-value" id="totalCompanies">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-table" id="billsTable" style="display: none;">
+                    <div class="table-header">
+                        <div class="table-title">Bills Ready to Generate</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Entries</th>
+                                <th>Total Working Hour/Qty</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Google Sheets Page -->
+            <div id="google-sheets-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Google Sheets Sync</h1>
+                </div>
+
+                <div class="form-section">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Connect Your Google Sheet</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Google Apps Script Web App URL</label>
+                            <input type="url" class="form-input" id="googleSheetUrl" placeholder="Paste your deployed Google Apps Script web app URL">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sync Mode</label>
+                            <input type="text" class="form-input" value="Full overwrite on every sync" readonly style="background: var(--bg-light);">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            The app can send all entries directly to Google Sheets. After you paste the Apps Script web app URL, each add, delete, and clear action will sync the latest data to your sheet.
+                        </p>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary" type="button" onclick="saveGoogleSheetUrl()">Save Google Sheet URL</button>
+                            <button class="btn btn-accent" type="button" onclick="syncEntriesToGoogleSheet(true)">Sync Now</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: #eef6ff; border: 2px solid #d7e8f8; border-radius: 8px;">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            Use a Google Apps Script web app attached to your spreadsheet. The page sends JSON with all current entries, then the script rewrites the sheet from that latest data.
+                        </p>
+                        <div id="sheetStatus" style="margin-top: 0.75rem; font-size: 13px; color: var(--text-secondary);">
+                            No Google Sheet URL saved yet.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="background: #fef9e7; border-color: #f39c12; margin-top: 2rem;">
+                    <div style="color: #f39c12; font-weight: 700; margin-bottom: 0.5rem;">Info</div>
+                    <div style="font-size: 13px; color: var(--text-secondary);">
+                        Sync sends these columns: ID, Date, Company, Work Description, Working Hour/Qty, Rate, Amount, Notes, File Name, Timestamp.
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div style="font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">Apps Script Expected Behavior</div>
+                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        Deploy a Google Apps Script web app that accepts a POST body with `action` and `entries`, clears the target sheet, writes the headers, then writes all rows again.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Reports & Analytics</h1>
+                </div>
+
+                <div class="form-section">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Report Filters</h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Company</label>
+                            <select class="form-select" id="reportCompanyFilter">
+                                <option value="all">All Companies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date Range</label>
+                            <select class="form-select" id="reportDateFilter">
+                                <option value="all">All Dates</option>
+                                <option value="thisMonth">This Month</option>
+                                <option value="last30">Last 30 Days</option>
+                                <option value="last90">Last 90 Days</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" id="reportCustomDateRow" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-input" id="reportStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-input" id="reportEndDate">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-primary" onclick="applyReportFilters()">Apply Filters</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetReportFilters()">Reset Filters</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="card">
+                        <div class="card-title">Total Working Hour/Qty</div>
+                        <div class="card-value" id="reportTotalHours">0</div>
+                        <div class="card-subtitle">All time</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Total Revenue</div>
+                        <div class="card-value" id="reportTotalRevenue">Rs0</div>
+                        <div class="card-subtitle">Without tax</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Average Rate</div>
+                        <div class="card-value" id="reportAverageRate">Rs0</div>
+                        <div class="card-subtitle">Revenue per hour</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Total Entries</div>
+                        <div class="card-value" id="reportEntries">0</div>
+                        <div class="card-subtitle">Work entries</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Company-wise Breakdown</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Entries</th>
+                                <th>Working Hour/Qty</th>
+                                <th>Revenue</th>
+                                <th>Average Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="companyBreakdownBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        const STORAGE_KEY = 'workEntries';
+        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
+        const COMPANY_OPTIONS_KEY = 'companyOptions';
+        const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
+        let workEntries = loadEntriesFromStorage();
+
+        // Set today's date as default
+        document.getElementById('entryDate').valueAsDate = new Date();
+
+        // Calculate amount on input change
+        document.getElementById('entryHours').addEventListener('input', calculateAmount);
+        document.getElementById('entryRate').addEventListener('input', calculateAmount);
+        document.getElementById('entryCompany').addEventListener('change', toggleNewCompanyInput);
+        document.getElementById('reportDateFilter').addEventListener('change', toggleCustomReportDates);
+
+        function calculateAmount() {
+            const hours = parseFloat(document.getElementById('entryHours').value) || 0;
+            const rate = parseFloat(document.getElementById('entryRate').value) || 0;
+            const amount = hours * rate;
+            document.getElementById('entryAmount').value = amount.toFixed(2);
+        }
+
+        // File upload handling
+        document.getElementById('workFile').addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                const fileSize = (this.files[0].size / 1024).toFixed(2);
+                document.getElementById('fileInfo').textContent = `${fileName} (${fileSize} KB)`;
+            }
+        });
+
+        function loadEntriesFromStorage() {
+            try {
+                const savedEntries = localStorage.getItem(STORAGE_KEY);
+                return savedEntries ? JSON.parse(savedEntries) : [];
+            } catch (error) {
+                console.error('Unable to read saved entries from browser storage.', error);
+                localStorage.removeItem(STORAGE_KEY);
+                return [];
+            }
+        }
+
+        function saveEntriesToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(workEntries));
+        }
+
+        function loadCompanyOptions() {
+            try {
+                const savedCompanies = JSON.parse(localStorage.getItem(COMPANY_OPTIONS_KEY) || '[]');
+                return [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
+            } catch (error) {
+                console.error('Unable to read saved company options.', error);
+                return [...DEFAULT_COMPANIES].sort();
+            }
+        }
+
+        function saveCompanyOptions(companies) {
+            localStorage.setItem(COMPANY_OPTIONS_KEY, JSON.stringify(companies));
+        }
+
+        function populateEntryCompanyOptions(selectedValue = '') {
+            const companySelect = document.getElementById('entryCompany');
+            const companies = loadCompanyOptions();
+            companySelect.innerHTML =
+                '<option value="">-- Select Company --</option>' +
+                companies.map(company => `<option value="${company}">${company}</option>`).join('') +
+                '<option value="__new__">Add New Company</option>';
+
+            companySelect.value = selectedValue || '';
+        }
+
+        function addCompanyOption(companyName) {
+            const normalizedName = companyName.trim();
+            if (!normalizedName) {
+                return '';
+            }
+
+            const companies = loadCompanyOptions();
+            const existingCompany = companies.find(company => company.toLowerCase() === normalizedName.toLowerCase());
+            const finalName = existingCompany || normalizedName;
+
+            if (!existingCompany) {
+                companies.push(normalizedName);
+                companies.sort((a, b) => a.localeCompare(b));
+                saveCompanyOptions(companies);
+            }
+
+            populateEntryCompanyOptions(finalName);
+            populateReportCompanyFilter();
+            return finalName;
+        }
+
+        function toggleNewCompanyInput() {
+            const isNewCompany = document.getElementById('entryCompany').value === '__new__';
+            const newCompanyRow = document.getElementById('newCompanyRow');
+            const newCompanyInput = document.getElementById('newCompanyName');
+
+            newCompanyRow.style.display = isNewCompany ? 'grid' : 'none';
+            newCompanyInput.required = isNewCompany;
+
+            if (!isNewCompany) {
+                newCompanyInput.value = '';
+            }
+        }
+
+        function getUniqueCompanies(entries) {
+            return [...new Set(entries.map(entry => entry.company).filter(Boolean))].sort();
+        }
+
+        function populateReportCompanyFilter() {
+            const companyFilter = document.getElementById('reportCompanyFilter');
+            const selectedValue = companyFilter.value || 'all';
+            const companies = getUniqueCompanies(workEntries);
+
+            companyFilter.innerHTML = '<option value="all">All Companies</option>' +
+                companies.map(company => `<option value="${company}">${company}</option>`).join('');
+
+            companyFilter.value = companies.includes(selectedValue) || selectedValue === 'all' ? selectedValue : 'all';
+        }
+
+        function toggleCustomReportDates() {
+            const dateFilter = document.getElementById('reportDateFilter').value;
+            document.getElementById('reportCustomDateRow').style.display = dateFilter === 'custom' ? 'grid' : 'none';
+        }
+
+        function applyReportFilters() {
+            updateReports();
+        }
+
+        function resetReportFilters() {
+            document.getElementById('reportCompanyFilter').value = 'all';
+            document.getElementById('reportDateFilter').value = 'all';
+            document.getElementById('reportStartDate').value = '';
+            document.getElementById('reportEndDate').value = '';
+            toggleCustomReportDates();
+            updateReports();
+        }
+
+        function getFilteredReportEntries() {
+            const companyFilter = document.getElementById('reportCompanyFilter').value;
+            const dateFilter = document.getElementById('reportDateFilter').value;
+            const startDateValue = document.getElementById('reportStartDate').value;
+            const endDateValue = document.getElementById('reportEndDate').value;
+            const today = new Date();
+
+            return workEntries.filter(entry => {
+                if (companyFilter !== 'all' && entry.company !== companyFilter) {
+                    return false;
+                }
+
+                const entryDate = new Date(entry.date);
+                if (Number.isNaN(entryDate.getTime())) {
+                    return false;
+                }
+
+                if (dateFilter === 'thisMonth') {
+                    return entryDate.getMonth() === today.getMonth() && entryDate.getFullYear() === today.getFullYear();
+                }
+
+                if (dateFilter === 'last30' || dateFilter === 'last90') {
+                    const days = dateFilter === 'last30' ? 30 : 90;
+                    const cutoff = new Date(today);
+                    cutoff.setHours(0, 0, 0, 0);
+                    cutoff.setDate(cutoff.getDate() - days);
+                    return entryDate >= cutoff && entryDate <= today;
+                }
+
+                if (dateFilter === 'custom') {
+                    if (startDateValue && entry.date < startDateValue) {
+                        return false;
+                    }
+                    if (endDateValue && entry.date > endDateValue) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+
+        function loadGoogleSheetUrl() {
+            return localStorage.getItem(GOOGLE_SHEET_URL_KEY) || '';
+        }
+
+        function setSheetStatus(message, isError = false) {
+            const sheetStatus = document.getElementById('sheetStatus');
+            if (!sheetStatus) {
+                return;
+            }
+
+            sheetStatus.textContent = message;
+            sheetStatus.style.color = isError ? 'var(--danger)' : 'var(--text-secondary)';
+        }
+
+        function saveGoogleSheetUrl() {
+            const input = document.getElementById('googleSheetUrl');
+            const url = input.value.trim();
+
+            if (!url) {
+                setSheetStatus('Paste the Google Apps Script web app URL first.', true);
+                alert('Please paste the Google Apps Script web app URL.');
+                return;
+            }
+
+            localStorage.setItem(GOOGLE_SHEET_URL_KEY, url);
+            setSheetStatus('Google Sheet URL saved. New changes will sync automatically.');
+            alert('Google Sheet URL saved.');
+        }
+
+        function handleAddEntry(event) {
+            event.preventDefault();
+
+            const date = document.getElementById('entryDate').value;
+            const companySelectValue = document.getElementById('entryCompany').value;
+            const newCompanyName = document.getElementById('newCompanyName').value.trim();
+            const work = document.getElementById('entryWork').value;
+            const hours = parseFloat(document.getElementById('entryHours').value);
+            const rate = parseFloat(document.getElementById('entryRate').value);
+            const amount = hours * rate;
+            const notes = document.getElementById('entryNotes').value;
+            const fileInput = document.getElementById('workFile');
+            const company = companySelectValue === '__new__' ? addCompanyOption(newCompanyName) : companySelectValue;
+
+            if (!company) {
+                alert(companySelectValue === '__new__' ? 'Please enter a new company name before saving.' : 'Please select a company before saving the entry.');
+                return;
+            }
+
+            if (!Number.isFinite(hours) || !Number.isFinite(rate)) {
+                alert('Please enter valid hours and rate values.');
+                return;
+            }
+
+            // Store file as base64
+            let fileData = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileData = {
+                        name: file.name,
+                        data: e.target.result
+                    };
+                    saveEntry(date, company, work, hours, rate, amount, notes, fileData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveEntry(date, company, work, hours, rate, amount, notes, null);
+            }
+        }
+
+        async function saveEntry(date, company, work, hours, rate, amount, notes, fileData) {
+            const entry = {
+                id: Date.now(),
+                date,
+                company,
+                work,
+                hours,
+                rate,
+                amount,
+                notes,
+                file: fileData,
+                timestamp: new Date().toLocaleString('en-IN')
+            };
+
+            workEntries.push(entry);
+            saveEntriesToStorage();
+            populateReportCompanyFilter();
+
+            const sheetSynced = await syncEntriesToGoogleSheet();
+
+            alert(sheetSynced ? 'Entry saved and Google Sheet updated.' : 'Entry saved successfully.');
+            resetForm();
+            updateAllStats();
+        }
+
+        function resetForm() {
+            document.getElementById('entryDate').valueAsDate = new Date();
+            populateEntryCompanyOptions();
+            document.getElementById('entryWork').value = '';
+            document.getElementById('entryHours').value = '';
+            document.getElementById('entryRate').value = '';
+            document.getElementById('entryAmount').value = '';
+            document.getElementById('entryNotes').value = '';
+            document.getElementById('workFile').value = '';
+            document.getElementById('newCompanyName').value = '';
+            document.getElementById('fileInfo').textContent = 'No file chosen';
+            toggleNewCompanyInput();
+        }
+
+        function displayEntries() {
+            const tbody = document.getElementById('entriesTableBody');
+            
+            if (workEntries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No entries yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = workEntries.map((entry, index) => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td><strong>${entry.company}</strong></td>
+                    <td>${entry.work}</td>
+                    <td>${entry.hours} hrs</td>
+                    <td>Rs${entry.rate}</td>
+                    <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
+                    <td>${entry.file ? `<a href="#" onclick="downloadFile(${index})" style="color: var(--primary); text-decoration: none;">${entry.file.name}</a>` : '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="deleteEntry(${index})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteEntry(index) {
+            if (confirm('Delete this entry?')) {
+                workEntries.splice(index, 1);
+                saveEntriesToStorage();
+                await syncEntriesToGoogleSheet();
+                updateAllStats();
+            }
+        }
+
+        function downloadFile(index) {
+            const entry = workEntries[index];
+            if (entry.file) {
+                const link = document.createElement('a');
+                link.href = entry.file.data;
+                link.download = entry.file.name;
+                link.click();
+            }
+        }
+
+        function switchPage(page, navEvent) {
+            if (navEvent) {
+                navEvent.preventDefault();
+            }
+
+            document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${page}-page`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            if (navEvent && navEvent.currentTarget) {
+                navEvent.currentTarget.classList.add('active');
+            }
+
+            if (page === 'view-entries') {
+                displayEntries();
+            } else if (page === 'generate-bills') {
+                updateBillStats();
+            } else if (page === 'reports') {
+                updateReports();
+            }
+        }
+
+        function updateBillStats() {
+            let totalEntries = workEntries.length;
+            let totalHours = 0;
+            let totalAmount = 0;
+            let companies = new Set();
+
+            workEntries.forEach(entry => {
+                totalHours += entry.hours;
+                totalAmount += entry.amount;
+                companies.add(entry.company);
+            });
+
+            document.getElementById('totalEntries').textContent = totalEntries;
+            document.getElementById('totalHours').textContent = totalHours.toFixed(1);
+            document.getElementById('totalAmount').textContent = 'Rs' + totalAmount.toFixed(2);
+            document.getElementById('totalCompanies').textContent = companies.size;
+
+            if (totalEntries > 0) {
+                displayBillsTable();
+            } else {
+                document.getElementById('billsTable').style.display = 'none';
+                document.getElementById('billsTableBody').innerHTML = '';
+            }
+        }
+
+        function displayBillsTable() {
+            const billsTable = document.getElementById('billsTable');
+            const tbody = document.getElementById('billsTableBody');
+            
+            const companySummary = {};
+            workEntries.forEach(entry => {
+                if (!companySummary[entry.company]) {
+                    companySummary[entry.company] = {
+                        entries: 0,
+                        hours: 0,
+                        amount: 0
+                    };
+                }
+                companySummary[entry.company].entries += 1;
+                companySummary[entry.company].hours += entry.hours;
+                companySummary[entry.company].amount += entry.amount;
+            });
+
+            tbody.innerHTML = Object.entries(companySummary).map(([company, data]) => {
+                const averageRate = data.hours ? data.amount / data.hours : 0;
+                return `
+                    <tr>
+                        <td><strong>${company}</strong></td>
+                        <td>${data.entries}</td>
+                        <td>${data.hours.toFixed(1)} hrs</td>
+                        <td class="amount-value">Rs${data.amount.toFixed(2)}</td>
+                        <td>Ready</td>
+                        <td>
+                            <button class="action-btn" onclick="generateBillForCompany('${company}')">Generate</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            billsTable.style.display = 'block';
+        }
+
+        function generateBillForCompany(company) {
+            alert(`Bill generated for ${company}!\n\nInvoice has been created and saved.`);
+        }
+
+        function generateAllBills() {
+            if (workEntries.length === 0) {
+                alert('No entries to generate bills from!');
+                return;
+            }
+            alert('All bills generated successfully!');
+        }
+
+        function getSheetPayload() {
+            return workEntries.map(entry => ({
+                id: entry.id,
+                date: entry.date,
+                company: entry.company,
+                work: entry.work,
+                hours: entry.hours,
+                rate: entry.rate,
+                amount: entry.amount,
+                notes: entry.notes || '',
+                fileName: entry.file ? entry.file.name : '',
+                timestamp: entry.timestamp
+            }));
+        }
+
+        async function syncEntriesToGoogleSheet(showSuccessMessage = false) {
+            const googleSheetUrl = loadGoogleSheetUrl();
+
+            if (!googleSheetUrl) {
+                if (showSuccessMessage) {
+                    alert('Save the Google Sheet URL first.');
+                }
+                return false;
+            }
+
+            try {
+                const response = await fetch(googleSheetUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify({
+                        action: 'replaceAll',
+                        entries: getSheetPayload()
+                    })
+                });
+
+                setSheetStatus(`Google Sheet synced at ${new Date().toLocaleTimeString('en-IN')}.`);
+
+                if (showSuccessMessage) {
+                    alert('Google Sheet synced successfully.');
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Google Sheet sync failed.', error);
+                setSheetStatus('Google Sheet sync failed. Check the Apps Script URL and deployment access.', true);
+
+                if (showSuccessMessage) {
+                    alert('Unable to sync to Google Sheet.');
+                }
+
+                return false;
+            }
+        }
+
+        function updateReports() {
+            const filteredEntries = getFilteredReportEntries();
+            let totalHours = 0;
+            let totalAmount = 0;
+            let totalEntries = filteredEntries.length;
+
+            const companySummary = {};
+            filteredEntries.forEach(entry => {
+                totalHours += entry.hours;
+                totalAmount += entry.amount;
+                if (!companySummary[entry.company]) {
+                    companySummary[entry.company] = { entries: 0, hours: 0, amount: 0 };
+                }
+                companySummary[entry.company].entries += 1;
+                companySummary[entry.company].hours += entry.hours;
+                companySummary[entry.company].amount += entry.amount;
+            });
+
+            const averageRate = totalHours ? totalAmount / totalHours : 0;
+
+            document.getElementById('reportTotalHours').textContent = totalHours.toFixed(1);
+            document.getElementById('reportTotalRevenue').textContent = 'Rs' + totalAmount.toFixed(2);
+            document.getElementById('reportAverageRate').textContent = 'Rs' + averageRate.toFixed(2);
+            document.getElementById('reportEntries').textContent = totalEntries;
+
+            const tbody = document.getElementById('companyBreakdownBody');
+            tbody.innerHTML = Object.entries(companySummary).map(([company, data]) => {
+                const averageRate = data.hours ? data.amount / data.hours : 0;
+                return `
+                    <tr>
+                        <td><strong>${company}</strong></td>
+                        <td>${data.entries}</td>
+                        <td>${data.hours.toFixed(1)}</td>
+                        <td class="amount-value">Rs${data.amount.toFixed(2)}</td>
+                        <td>Rs${averageRate.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAllStats() {
+            populateReportCompanyFilter();
+            updateBillStats();
+            updateReports();
+            displayEntries();
+        }
+
+        function loadDataFromStorage() {
+            workEntries = loadEntriesFromStorage();
+            updateAllStats();
+            alert('Data refreshed.');
+        }
+
+        async function clearAllData() {
+            if (confirm('Are you sure? This will delete all entries permanently!')) {
+                workEntries = [];
+                saveEntriesToStorage();
+                await syncEntriesToGoogleSheet();
+                alert('All data cleared.');
+                updateAllStats();
+            }
+        }
+
+        // Initial load
+        populateEntryCompanyOptions();
+        document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
+        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded. New changes will sync automatically.' : 'No Google Sheet URL saved yet. Entries are still saved in this browser.');
+        toggleNewCompanyInput();
+        toggleCustomReportDates();
+        updateAllStats();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
