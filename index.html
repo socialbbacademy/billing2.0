@@ -802,7 +802,7 @@
                     <a href="#" class="nav-link" onclick="switchPage('expenses', event); return false;">Expenses</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="switchPage('google-sheets', event); return false;">Google Sheets</a>
+                    <a href="#" class="nav-link" onclick="switchPage('firebase-sync', event); return false;">Firebase Sync</a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="switchPage('reports', event); return false;">Reports</a>
@@ -814,13 +814,13 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Topbar -->
-        <div class="topbar">
-            <h2 style="font-size: 20px; font-weight: 700;">Beacon blitz - Digital Marketing Agency Billing</h2>
-            <div style="display: flex; gap: 1rem;">
-                <button class="btn btn-secondary" onclick="loadDataFromStorage()">Refresh</button>
-                <button class="btn btn-accent" onclick="alert('User: Admin')">Profile</button>
+            <div class="topbar">
+                <h2 style="font-size: 20px; font-weight: 700;">Beacon blitz - Digital Marketing Agency Billing</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadDataFromStorage()">Refresh Shared Data</button>
+                    <button class="btn btn-accent" onclick="alert('User: Admin')">Profile</button>
+                </div>
             </div>
-        </div>
 
         <!-- Container -->
         <div class="container">
@@ -1266,76 +1266,42 @@
                 </div>
             </div>
 
-            <!-- Google Sheets Page -->
-            <div id="google-sheets-page" class="page hidden">
+            <!-- Firebase Sync Page -->
+            <div id="firebase-sync-page" class="page hidden">
                 <div class="page-header">
-                    <h1 class="page-title">Google Sheets Sync</h1>
+                    <h1 class="page-title">Firebase Shared Sync</h1>
                 </div>
 
                 <div class="form-section">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Connect Your Google Sheet</h3>
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Shared Database Status</h3>
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Google Apps Script Web App URL</label>
-                            <input type="url" class="form-input" id="googleSheetUrl" placeholder="Paste your deployed Google Apps Script web app URL">
+                            <label class="form-label">Firebase Realtime Database URL</label>
+                            <input type="text" class="form-input" id="firebaseDatabaseUrl" readonly style="background: var(--bg-light);">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Sync Mode</label>
-                            <input type="text" class="form-input" value="Full overwrite on every sync" readonly style="background: var(--bg-light);">
+                            <input type="text" class="form-input" value="Shared live backup with auto refresh" readonly style="background: var(--bg-light);">
                         </div>
                     </div>
 
                     <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            The app can send all entries directly to Google Sheets. After you paste the Apps Script web app URL, each add, delete, and clear action will sync the latest data to your sheet.
+                            This app now uses Firebase as the shared source of truth. New companies, work entries, salary records, expense records, deletes, and clear actions are synced for everyone using the same app.
                         </p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn btn-primary" type="button" onclick="saveGoogleSheetUrl()">Save Google Sheet URL</button>
-                            <button class="btn btn-accent" type="button" onclick="syncEntriesToGoogleSheet(true)">Sync Now</button>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: #eef6ff; border: 2px solid #d7e8f8; border-radius: 8px;">
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            Use a Google Apps Script web app attached to your spreadsheet. The page sends JSON with all current entries, then the script rewrites the sheet from that latest data.
-                        </p>
-                        <div id="sheetStatus" style="margin-top: 0.75rem; font-size: 13px; color: var(--text-secondary);">
-                            No Google Sheet URL saved yet.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Firebase Sync</h3>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Firebase Realtime Database URL</label>
-                            <input type="url" class="form-input" id="firebaseDatabaseUrl" placeholder="https://your-project-default-rtdb.firebaseio.com">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Database Secret / Auth Token (Optional)</label>
-                            <input type="text" class="form-input" id="firebaseAuthToken" placeholder="Optional auth token for protected databases">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            Sync Existing Data uploads the current browser data to Firebase as a manual backup snapshot. It includes work entries, salary records, expense records, and saved company names.
-                        </p>
-                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn btn-primary" type="button" onclick="saveFirebaseSettings()">Save Firebase Settings</button>
-                            <button class="btn btn-accent" type="button" onclick="syncExistingDataToFirebase(true)">Sync Existing Data</button>
+                            <button class="btn btn-primary" type="button" onclick="loadDataFromStorage(true)">Refresh From Firebase</button>
+                            <button class="btn btn-accent" type="button" onclick="syncExistingDataToFirebase(true)">Push Current Data Now</button>
                         </div>
                     </div>
 
                     <div style="margin-top: 1.5rem; padding: 1.5rem; background: #eefaf1; border: 2px solid #d8efdf; border-radius: 8px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            This uses the Firebase Realtime Database REST API and writes a full JSON backup into the `billingData` path. It does not automatically load shared live updates from other users.
+                            Firebase polling refreshes this browser automatically so shared changes from other users appear here without manual re-entry.
                         </p>
                         <div id="firebaseStatus" style="margin-top: 0.75rem; font-size: 13px; color: var(--text-secondary);">
-                            No Firebase database URL saved yet.
+                            Connecting to shared Firebase data...
                         </div>
                     </div>
                 </div>
@@ -1343,14 +1309,14 @@
                 <div class="card" style="background: #fef9e7; border-color: #f39c12; margin-top: 2rem;">
                     <div style="color: #f39c12; font-weight: 700; margin-bottom: 0.5rem;">Info</div>
                     <div style="font-size: 13px; color: var(--text-secondary);">
-                        Sync sends these columns: ID, Date, Company, Work Description, Working Hour/Qty, Rate, Amount, Notes, File Name, Timestamp.
+                        Shared sync stores work entries, salary records, expense records, company names, and sync timestamps in Firebase.
                     </div>
                 </div>
 
                 <div class="card" style="margin-top: 1.5rem;">
-                    <div style="font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">Apps Script Expected Behavior</div>
+                    <div style="font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">How Shared Data Works</div>
                     <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
-                        Deploy a Google Apps Script web app that accepts a POST body with `action` and `entries`, clears the target sheet, writes the headers, then writes all rows again.
+                        The app reads from Firebase on startup, refreshes automatically in the background, and writes updates back after add, delete, or clear actions.
                     </div>
                 </div>
             </div>
@@ -1611,14 +1577,16 @@
         const STORAGE_KEY = 'workEntries';
         const SALARY_STORAGE_KEY = 'salaryEntries';
         const EXPENSE_STORAGE_KEY = 'expenseEntries';
-        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
-        const FIREBASE_DATABASE_URL_KEY = 'firebaseDatabaseUrl';
-        const FIREBASE_AUTH_TOKEN_KEY = 'firebaseAuthToken';
         const COMPANY_OPTIONS_KEY = 'companyOptions';
+        const FIREBASE_DATABASE_URL = 'https://beacon-blitz-default-rtdb.firebaseio.com';
+        const FIREBASE_API_KEY = 'AIzaSyDoNwaiYyR_UQDMajKFqUJikQ0u468P_OE';
+        const FIREBASE_POLL_INTERVAL_MS = 10000;
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
         let workEntries = loadEntriesFromStorage();
         let salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
         let expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
+        let lastFirebaseSnapshot = '';
+        let firebasePollingHandle = null;
 
         // Set today's date as default
         document.getElementById('entryDate').valueAsDate = new Date();
@@ -1645,6 +1613,10 @@
             const advancePayment = parseFloat(document.getElementById('salaryAdvancePayment').value) || 0;
             const currentBalance = Math.max(totalSalary - advancePayment, 0);
             document.getElementById('salaryCurrentBalance').value = currentBalance.toFixed(2);
+        }
+
+        function generateRecordId(prefix) {
+            return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
         }
 
         // File upload handling
@@ -1686,15 +1658,15 @@
         function loadCompanyOptions() {
             try {
                 const savedCompanies = JSON.parse(localStorage.getItem(COMPANY_OPTIONS_KEY) || '[]');
-                return [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
+                return normalizeCompanyOptions(savedCompanies);
             } catch (error) {
                 console.error('Unable to read saved company options.', error);
-                return [...DEFAULT_COMPANIES].sort();
+                return normalizeCompanyOptions([]);
             }
         }
 
         function saveCompanyOptions(companies) {
-            localStorage.setItem(COMPANY_OPTIONS_KEY, JSON.stringify(companies));
+            localStorage.setItem(COMPANY_OPTIONS_KEY, JSON.stringify(normalizeCompanyOptions(companies)));
         }
 
         function populateEntryCompanyOptions(selectedValue = '') {
@@ -1817,27 +1789,6 @@
             });
         }
 
-        function loadGoogleSheetUrl() {
-            return localStorage.getItem(GOOGLE_SHEET_URL_KEY) || '';
-        }
-
-        function loadFirebaseSettings() {
-            return {
-                databaseUrl: localStorage.getItem(FIREBASE_DATABASE_URL_KEY) || '',
-                authToken: localStorage.getItem(FIREBASE_AUTH_TOKEN_KEY) || ''
-            };
-        }
-
-        function setSheetStatus(message, isError = false) {
-            const sheetStatus = document.getElementById('sheetStatus');
-            if (!sheetStatus) {
-                return;
-            }
-
-            sheetStatus.textContent = message;
-            sheetStatus.style.color = isError ? 'var(--danger)' : 'var(--text-secondary)';
-        }
-
         function setFirebaseStatus(message, isError = false) {
             const firebaseStatus = document.getElementById('firebaseStatus');
             if (!firebaseStatus) {
@@ -1848,37 +1799,115 @@
             firebaseStatus.style.color = isError ? 'var(--danger)' : 'var(--text-secondary)';
         }
 
-        function saveGoogleSheetUrl() {
-            const input = document.getElementById('googleSheetUrl');
-            const url = input.value.trim();
-
-            if (!url) {
-                setSheetStatus('Paste the Google Apps Script web app URL first.', true);
-                alert('Please paste the Google Apps Script web app URL.');
-                return;
-            }
-
-            localStorage.setItem(GOOGLE_SHEET_URL_KEY, url);
-            setSheetStatus('Google Sheet URL saved. New changes will sync automatically.');
-            alert('Google Sheet URL saved.');
+        function normalizeCompanyOptions(companies) {
+            return [...new Set([...(Array.isArray(companies) ? companies : []), ...DEFAULT_COMPANIES].filter(Boolean))].sort((a, b) => a.localeCompare(b));
         }
 
-        function saveFirebaseSettings() {
-            const databaseUrlInput = document.getElementById('firebaseDatabaseUrl');
-            const authTokenInput = document.getElementById('firebaseAuthToken');
-            const databaseUrl = databaseUrlInput.value.trim().replace(/\/+$/, '');
-            const authToken = authTokenInput.value.trim();
+        function getFirebaseEndpoint() {
+            return `${FIREBASE_DATABASE_URL.replace(/\/+$/, '')}/billingData.json`;
+        }
 
-            if (!databaseUrl) {
-                setFirebaseStatus('Paste the Firebase Realtime Database URL first.', true);
-                alert('Please paste the Firebase Realtime Database URL.');
-                return;
+        function getCurrentSnapshotSignature(data) {
+            return JSON.stringify({
+                companies: normalizeCompanyOptions(data.companies),
+                workEntries: Array.isArray(data.workEntries) ? data.workEntries : [],
+                salaryEntries: Array.isArray(data.salaryEntries) ? data.salaryEntries : [],
+                expenseEntries: Array.isArray(data.expenseEntries) ? data.expenseEntries : []
+            });
+        }
+
+        function persistAllDataLocally() {
+            saveEntriesToStorage();
+            saveSalaryEntriesToStorage();
+            saveExpenseEntriesToStorage();
+            saveCompanyOptions(loadCompanyOptions());
+        }
+
+        function applySharedData(data) {
+            const selectedCompany = document.getElementById('entryCompany')?.value || '';
+            const normalizedCompanies = normalizeCompanyOptions(data.companies);
+
+            workEntries = Array.isArray(data.workEntries) ? data.workEntries : [];
+            salaryEntries = Array.isArray(data.salaryEntries) ? data.salaryEntries : [];
+            expenseEntries = Array.isArray(data.expenseEntries) ? data.expenseEntries : [];
+
+            saveCompanyOptions(normalizedCompanies);
+            saveEntriesToStorage();
+            saveSalaryEntriesToStorage();
+            saveExpenseEntriesToStorage();
+
+            populateEntryCompanyOptions(normalizedCompanies.includes(selectedCompany) ? selectedCompany : '');
+            toggleNewCompanyInput();
+            updateAllStats();
+            lastFirebaseSnapshot = getCurrentSnapshotSignature({
+                companies: normalizedCompanies,
+                workEntries,
+                salaryEntries,
+                expenseEntries
+            });
+        }
+
+        async function fetchSharedDataFromFirebase() {
+            const response = await fetch(getFirebaseEndpoint(), {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Firebase read failed with status ${response.status}`);
             }
 
-            localStorage.setItem(FIREBASE_DATABASE_URL_KEY, databaseUrl);
-            localStorage.setItem(FIREBASE_AUTH_TOKEN_KEY, authToken);
-            setFirebaseStatus('Firebase settings saved. Existing data is ready to sync.');
-            alert('Firebase settings saved.');
+            const data = await response.json();
+            return {
+                companies: normalizeCompanyOptions(data?.companies),
+                workEntries: Array.isArray(data?.workEntries) ? data.workEntries : [],
+                salaryEntries: Array.isArray(data?.salaryEntries) ? data.salaryEntries : [],
+                expenseEntries: Array.isArray(data?.expenseEntries) ? data.expenseEntries : []
+            };
+        }
+
+        async function loadSharedData(showSuccessMessage = false) {
+            try {
+                const remoteData = await fetchSharedDataFromFirebase();
+                const nextSignature = getCurrentSnapshotSignature(remoteData);
+
+                if (nextSignature !== lastFirebaseSnapshot) {
+                    applySharedData(remoteData);
+                }
+
+                setFirebaseStatus(`Shared Firebase data refreshed at ${new Date().toLocaleTimeString('en-IN')}.`);
+
+                if (showSuccessMessage) {
+                    alert('Shared Firebase data refreshed.');
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Unable to load shared Firebase data.', error);
+                setFirebaseStatus('Unable to load shared Firebase data. Showing last saved browser copy.', true);
+
+                if (showSuccessMessage) {
+                    alert('Unable to refresh shared Firebase data.');
+                }
+
+                return false;
+            }
+        }
+
+        function hasMeaningfulSharedData(data) {
+            return (data.workEntries?.length || 0) > 0 ||
+                (data.salaryEntries?.length || 0) > 0 ||
+                (data.expenseEntries?.length || 0) > 0 ||
+                normalizeCompanyOptions(data.companies).length > DEFAULT_COMPANIES.length;
+        }
+
+        function startFirebasePolling() {
+            if (firebasePollingHandle) {
+                clearInterval(firebasePollingHandle);
+            }
+
+            firebasePollingHandle = setInterval(() => {
+                loadSharedData(false);
+            }, FIREBASE_POLL_INTERVAL_MS);
         }
 
         function updateHeroSummary() {
@@ -1893,7 +1922,7 @@
             document.getElementById('heroNet').textContent = 'Rs' + netBalance.toFixed(2);
         }
 
-        function handleAddSalary(event) {
+        async function handleAddSalary(event) {
             event.preventDefault();
 
             const date = document.getElementById('salaryDate').value;
@@ -1916,8 +1945,8 @@
                 return;
             }
 
-            salaryEntries.push({
-                id: Date.now(),
+            const salaryEntry = {
+                id: generateRecordId('salary'),
                 date,
                 staffName,
                 role,
@@ -1927,12 +1956,17 @@
                 mode,
                 reference,
                 notes
-            });
+            };
 
-            saveSalaryEntriesToStorage();
+            const saved = await syncSharedMutation(() => {
+                salaryEntries.push(salaryEntry);
+            }, 'Salary entry saved and shared successfully.');
+
+            if (!saved) {
+                return;
+            }
+
             resetSalaryForm();
-            updateAllStats();
-            alert('Salary entry saved successfully.');
         }
 
         function resetSalaryForm() {
@@ -1971,7 +2005,7 @@
                 return;
             }
 
-            tbody.innerHTML = salaryEntries.map((entry, index) => `
+            tbody.innerHTML = salaryEntries.map(entry => `
                 <tr>
                     <td>${entry.date}</td>
                     <td><strong>${entry.staffName}</strong></td>
@@ -1981,29 +2015,28 @@
                     <td>Rs${entry.currentBalance.toFixed(2)}</td>
                     <td>${entry.mode}</td>
                     <td>${entry.reference || '-'}</td>
-                    <td><button class="action-btn" onclick="deleteSalaryEntry(${index})">Delete</button></td>
+                    <td><button class="action-btn" onclick='deleteSalaryEntry(${JSON.stringify(entry.id)})'>Delete</button></td>
                 </tr>
             `).join('');
         }
 
-        function deleteSalaryEntry(index) {
+        async function deleteSalaryEntry(entryId) {
             if (confirm('Delete this salary entry?')) {
-                salaryEntries.splice(index, 1);
-                saveSalaryEntriesToStorage();
-                updateAllStats();
+                await syncSharedMutation(() => {
+                    salaryEntries = salaryEntries.filter(entry => entry.id !== entryId);
+                }, 'Salary entry deleted for all users.');
             }
         }
 
-        function clearSalaryData() {
+        async function clearSalaryData() {
             if (confirm('Are you sure? This will delete all salary entries.')) {
-                salaryEntries = [];
-                saveSalaryEntriesToStorage();
-                updateAllStats();
-                alert('All salary data cleared.');
+                await syncSharedMutation(() => {
+                    salaryEntries = [];
+                }, 'All salary data cleared for all users.');
             }
         }
 
-        function handleAddExpense(event) {
+        async function handleAddExpense(event) {
             event.preventDefault();
 
             const date = document.getElementById('expenseDate').value;
@@ -2019,8 +2052,8 @@
                 return;
             }
 
-            expenseEntries.push({
-                id: Date.now(),
+            const expenseEntry = {
+                id: generateRecordId('expense'),
                 date,
                 category,
                 title,
@@ -2028,12 +2061,17 @@
                 mode,
                 vendor,
                 notes
-            });
+            };
 
-            saveExpenseEntriesToStorage();
+            const saved = await syncSharedMutation(() => {
+                expenseEntries.push(expenseEntry);
+            }, 'Expense entry saved and shared successfully.');
+
+            if (!saved) {
+                return;
+            }
+
             resetExpenseForm();
-            updateAllStats();
-            alert('Expense entry saved successfully.');
         }
 
         function resetExpenseForm() {
@@ -2058,7 +2096,7 @@
                 return;
             }
 
-            tbody.innerHTML = expenseEntries.map((entry, index) => `
+            tbody.innerHTML = expenseEntries.map(entry => `
                 <tr>
                     <td>${entry.date}</td>
                     <td>${entry.category}</td>
@@ -2066,25 +2104,24 @@
                     <td>${entry.vendor || '-'}</td>
                     <td>${entry.mode}</td>
                     <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
-                    <td><button class="action-btn" onclick="deleteExpenseEntry(${index})">Delete</button></td>
+                    <td><button class="action-btn" onclick='deleteExpenseEntry(${JSON.stringify(entry.id)})'>Delete</button></td>
                 </tr>
             `).join('');
         }
 
-        function deleteExpenseEntry(index) {
+        async function deleteExpenseEntry(entryId) {
             if (confirm('Delete this expense entry?')) {
-                expenseEntries.splice(index, 1);
-                saveExpenseEntriesToStorage();
-                updateAllStats();
+                await syncSharedMutation(() => {
+                    expenseEntries = expenseEntries.filter(entry => entry.id !== entryId);
+                }, 'Expense entry deleted for all users.');
             }
         }
 
-        function clearExpenseData() {
+        async function clearExpenseData() {
             if (confirm('Are you sure? This will delete all expense entries.')) {
-                expenseEntries = [];
-                saveExpenseEntriesToStorage();
-                updateAllStats();
-                alert('All expense data cleared.');
+                await syncSharedMutation(() => {
+                    expenseEntries = [];
+                }, 'All expense data cleared for all users.');
             }
         }
 
@@ -2169,7 +2206,7 @@
 
         async function saveEntry(date, company, work, hours, rate, amount, notes, fileData) {
             const entry = {
-                id: Date.now(),
+                id: generateRecordId('work'),
                 date,
                 company,
                 work,
@@ -2181,15 +2218,16 @@
                 timestamp: new Date().toLocaleString('en-IN')
             };
 
-            workEntries.push(entry);
-            saveEntriesToStorage();
-            populateReportCompanyFilter();
+            const saved = await syncSharedMutation(() => {
+                addCompanyOption(company);
+                workEntries.push(entry);
+            }, 'Entry saved and shared successfully.');
 
-            const sheetSynced = await syncEntriesToGoogleSheet();
+            if (!saved) {
+                return;
+            }
 
-            alert(sheetSynced ? 'Entry saved and Google Sheet updated.' : 'Entry saved successfully.');
             resetForm();
-            updateAllStats();
         }
 
         function resetForm() {
@@ -2214,7 +2252,7 @@
                 return;
             }
 
-            tbody.innerHTML = workEntries.map((entry, index) => `
+            tbody.innerHTML = workEntries.map(entry => `
                 <tr>
                     <td>${entry.date}</td>
                     <td><strong>${entry.company}</strong></td>
@@ -2222,26 +2260,25 @@
                     <td>${entry.hours} hrs</td>
                     <td>Rs${entry.rate}</td>
                     <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
-                    <td>${entry.file ? `<a href="#" onclick="downloadFile(${index})" style="color: var(--primary); text-decoration: none;">${entry.file.name}</a>` : '-'}</td>
+                    <td>${entry.file ? `<a href="#" onclick='downloadFile(${JSON.stringify(entry.id)})' style="color: var(--primary); text-decoration: none;">${entry.file.name}</a>` : '-'}</td>
                     <td>
-                        <button class="action-btn" onclick="deleteEntry(${index})">Delete</button>
+                        <button class="action-btn" onclick='deleteEntry(${JSON.stringify(entry.id)})'>Delete</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function deleteEntry(index) {
+        async function deleteEntry(entryId) {
             if (confirm('Delete this entry?')) {
-                workEntries.splice(index, 1);
-                saveEntriesToStorage();
-                await syncEntriesToGoogleSheet();
-                updateAllStats();
+                await syncSharedMutation(() => {
+                    workEntries = workEntries.filter(entry => entry.id !== entryId);
+                }, 'Entry deleted for all users.');
             }
         }
 
-        function downloadFile(index) {
-            const entry = workEntries[index];
-            if (entry.file) {
+        function downloadFile(entryId) {
+            const entry = workEntries.find(item => item.id === entryId);
+            if (entry && entry.file) {
                 const link = document.createElement('a');
                 link.href = entry.file.data;
                 link.download = entry.file.name;
@@ -2357,21 +2394,6 @@
             alert('All bills generated successfully!');
         }
 
-        function getSheetPayload() {
-            return workEntries.map(entry => ({
-                id: entry.id,
-                date: entry.date,
-                company: entry.company,
-                work: entry.work,
-                hours: entry.hours,
-                rate: entry.rate,
-                amount: entry.amount,
-                notes: entry.notes || '',
-                fileName: entry.file ? entry.file.name : '',
-                timestamp: entry.timestamp
-            }));
-        }
-
         function getFirebasePayload() {
             return {
                 syncedAt: new Date().toISOString(),
@@ -2383,95 +2405,65 @@
             };
         }
 
-        function buildFirebaseEndpoint(databaseUrl, authToken) {
-            const normalizedDatabaseUrl = databaseUrl.trim().replace(/\/+$/, '');
-            const authQuery = authToken ? `?auth=${encodeURIComponent(authToken)}` : '';
-            return `${normalizedDatabaseUrl}/billingData.json${authQuery}`;
-        }
-
-        async function syncEntriesToGoogleSheet(showSuccessMessage = false) {
-            const googleSheetUrl = loadGoogleSheetUrl();
-
-            if (!googleSheetUrl) {
-                if (showSuccessMessage) {
-                    alert('Save the Google Sheet URL first.');
-                }
-                return false;
-            }
-
-            try {
-                const response = await fetch(googleSheetUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8'
-                    },
-                    body: JSON.stringify({
-                        action: 'replaceAll',
-                        entries: getSheetPayload()
-                    })
-                });
-
-                setSheetStatus(`Google Sheet synced at ${new Date().toLocaleTimeString('en-IN')}.`);
-
-                if (showSuccessMessage) {
-                    alert('Google Sheet synced successfully.');
-                }
-
-                return true;
-            } catch (error) {
-                console.error('Google Sheet sync failed.', error);
-                setSheetStatus('Google Sheet sync failed. Check the Apps Script URL and deployment access.', true);
-
-                if (showSuccessMessage) {
-                    alert('Unable to sync to Google Sheet.');
-                }
-
-                return false;
-            }
-        }
-
         async function syncExistingDataToFirebase(showSuccessMessage = false) {
-            const { databaseUrl, authToken } = loadFirebaseSettings();
-
-            if (!databaseUrl) {
-                setFirebaseStatus('Save the Firebase database URL first.', true);
-                if (showSuccessMessage) {
-                    alert('Save the Firebase database URL first.');
-                }
-                return false;
-            }
-
             try {
-                const response = await fetch(buildFirebaseEndpoint(databaseUrl, authToken), {
+                const payload = getFirebasePayload();
+                const response = await fetch(getFirebaseEndpoint(), {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(getFirebasePayload())
+                    body: JSON.stringify(payload)
                 });
 
                 if (!response.ok) {
                     throw new Error(`Firebase sync failed with status ${response.status}`);
                 }
 
+                lastFirebaseSnapshot = getCurrentSnapshotSignature(payload);
                 setFirebaseStatus(`Firebase synced at ${new Date().toLocaleTimeString('en-IN')}.`);
 
                 if (showSuccessMessage) {
-                    alert('Existing data synced to Firebase successfully.');
+                    alert('Shared Firebase data synced successfully.');
                 }
 
                 return true;
             } catch (error) {
                 console.error('Firebase sync failed.', error);
-                setFirebaseStatus('Firebase sync failed. Check the database URL, auth token, and Firebase rules.', true);
+                setFirebaseStatus('Firebase sync failed. Check the Firebase database rules and connection.', true);
 
                 if (showSuccessMessage) {
-                    alert('Unable to sync existing data to Firebase.');
+                    alert('Unable to sync shared Firebase data.');
                 }
 
                 return false;
             }
+        }
+
+        async function syncSharedMutation(mutator, successMessage) {
+            try {
+                const latestData = await fetchSharedDataFromFirebase();
+                applySharedData(latestData);
+            } catch (error) {
+                console.warn('Continuing with the last local copy because Firebase refresh failed before saving.', error);
+            }
+
+            mutator();
+            persistAllDataLocally();
+            updateAllStats();
+
+            const synced = await syncExistingDataToFirebase(false);
+
+            if (!synced) {
+                alert('Changes were saved in this browser, but Firebase sync failed.');
+                return false;
+            }
+
+            if (successMessage) {
+                alert(successMessage);
+            }
+
+            return true;
         }
 
         function updateReports() {
@@ -2532,35 +2524,46 @@
             displayExpenseEntries();
         }
 
-        function loadDataFromStorage() {
-            workEntries = loadEntriesFromStorage();
-            salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
-            expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
-            updateAllStats();
-            alert('Data refreshed.');
-        }
-
-        async function clearAllData() {
-            if (confirm('Are you sure? This will delete all entries permanently!')) {
-                workEntries = [];
-                saveEntriesToStorage();
-                await syncEntriesToGoogleSheet();
-                alert('All data cleared.');
+        async function loadDataFromStorage(showSuccessMessage = true) {
+            const loaded = await loadSharedData(showSuccessMessage);
+            if (!loaded) {
                 updateAllStats();
             }
         }
 
-        // Initial load
-        populateEntryCompanyOptions();
-        document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
-        const firebaseSettings = loadFirebaseSettings();
-        document.getElementById('firebaseDatabaseUrl').value = firebaseSettings.databaseUrl;
-        document.getElementById('firebaseAuthToken').value = firebaseSettings.authToken;
-        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded. New changes will sync automatically.' : 'No Google Sheet URL saved yet. Entries are still saved in this browser.');
-        setFirebaseStatus(firebaseSettings.databaseUrl ? 'Firebase settings loaded. Existing data is ready to sync.' : 'No Firebase database URL saved yet.');
-        toggleNewCompanyInput();
-        toggleCustomReportDates();
-        updateAllStats();
+        async function clearAllData() {
+            if (confirm('Are you sure? This will delete work, salary, expense, and custom company data for all users!')) {
+                await syncSharedMutation(() => {
+                    workEntries = [];
+                    salaryEntries = [];
+                    expenseEntries = [];
+                    saveCompanyOptions(DEFAULT_COMPANIES);
+                }, 'All shared data cleared for all users.');
+            }
+        }
+
+        async function initializeSharedApp() {
+            const cachedPayload = getFirebasePayload();
+            populateEntryCompanyOptions();
+            document.getElementById('firebaseDatabaseUrl').value = FIREBASE_DATABASE_URL;
+            setFirebaseStatus('Connecting to shared Firebase data...');
+            toggleNewCompanyInput();
+            toggleCustomReportDates();
+            updateAllStats();
+
+            const loaded = await loadSharedData(false);
+            if (!loaded) {
+                setFirebaseStatus('Using browser backup. Firebase will sync when available.', true);
+            } else if (!hasMeaningfulSharedData(getFirebasePayload()) && hasMeaningfulSharedData(cachedPayload)) {
+                applySharedData(cachedPayload);
+                await syncExistingDataToFirebase(false);
+                setFirebaseStatus('Firebase was empty, so this browser backup was uploaded for everyone.');
+            }
+
+            startFirebasePolling();
+        }
+
+        initializeSharedApp();
 
         // Initialize admin session
         initAdminSession();
@@ -2573,10 +2576,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
