@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -420,6 +420,202 @@
             margin-bottom: 2rem;
         }
 
+        .hero-banner {
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.38), transparent 34%),
+                linear-gradient(135deg, rgba(91, 95, 239, 0.95), rgba(255, 77, 141, 0.92), rgba(255, 176, 97, 0.92));
+            border-radius: 24px;
+            padding: 1.8rem 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 24px 60px rgba(88, 61, 142, 0.28);
+        }
+
+        .hero-title {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.88);
+            max-width: 720px;
+            line-height: 1.6;
+        }
+
+        .glow-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.8rem;
+        }
+
+        .summary-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-pill {
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+        }
+
+        .summary-pill strong {
+            display: block;
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(91, 95, 239, 0.18), transparent 28%),
+                radial-gradient(circle at 85% 15%, rgba(255, 77, 141, 0.16), transparent 24%),
+                radial-gradient(circle at 70% 80%, rgba(0, 183, 194, 0.16), transparent 25%),
+                linear-gradient(180deg, #fef8ff 0%, #f3f8ff 47%, #fffaf0 100%);
+            z-index: -2;
+        }
+
+        body {
+            font-family: 'Trebuchet MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            background: transparent;
+        }
+
+        .sidebar {
+            background:
+                radial-gradient(circle at top, rgba(255, 255, 255, 0.18), transparent 36%),
+                linear-gradient(180deg, #1e2148 0%, #5b5fef 50%, #ff4d8d 100%);
+            box-shadow: 24px 0 48px rgba(43, 31, 84, 0.22);
+            border-right: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .logo {
+            font-size: 28px;
+        }
+
+        .nav-link {
+            border: 1px solid transparent;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .topbar {
+            margin: 1rem 1rem 0;
+            border-radius: 22px;
+            border: 1px solid rgba(91, 95, 239, 0.12);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 18px 40px rgba(59, 69, 115, 0.12);
+        }
+
+        .container {
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            background: linear-gradient(135deg, #261c53 0%, #5b5fef 45%, #ff4d8d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+        }
+
+        .btn {
+            border-radius: 14px;
+            box-shadow: 0 10px 18px rgba(47, 38, 94, 0.12);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5b5fef 0%, #7f56d9 100%);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6b6ef5 0%, #8f68e7 100%);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #ff7a18 0%, #ff4d8d 100%);
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #ff9345 0%, #ff679d 100%);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(91, 95, 239, 0.18);
+        }
+
+        .form-section,
+        .card,
+        .data-table {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(91, 95, 239, 0.12);
+            box-shadow: 0 20px 40px rgba(43, 31, 84, 0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        .table-header,
+        thead {
+            background: linear-gradient(135deg, rgba(91, 95, 239, 0.08), rgba(255, 77, 141, 0.08), rgba(255, 176, 97, 0.12));
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #5b5fef, #00b7c2, #ff7a18, #ff4d8d);
+        }
+
+        .card-value {
+            color: #261c53;
+        }
+
+        .amount-value {
+            color: #ff4d8d;
+        }
+
+        .action-btn {
+            color: #5b5fef;
+        }
+
+        .form-input,
+        .form-select {
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(91, 95, 239, 0.15);
+        }
+
         .hidden {
             display: none;
         }
@@ -459,6 +655,12 @@
                     <a href="#" class="nav-link" onclick="switchPage('generate-bills', event); return false;">Generate Bills</a>
                 </li>
                 <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('staff-salary', event); return false;">Staff Salary</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchPage('expenses', event); return false;">Expenses</a>
+                </li>
+                <li class="nav-item">
                     <a href="#" class="nav-link" onclick="switchPage('google-sheets', event); return false;">Google Sheets</a>
                 </li>
                 <li class="nav-item">
@@ -481,6 +683,31 @@
 
         <!-- Container -->
         <div class="container">
+            <div class="hero-banner">
+                <div class="glow-chip">Creative Finance Hub</div>
+                <div class="hero-title">Multi-color billing, salary, and expense control</div>
+                <div class="hero-subtitle">
+                    Track client work, team payouts, and business expenses from one polished workspace built for Beacon blitz. The dashboard now brings billing operations and overhead tracking into the same flow.
+                </div>
+                <div class="summary-strip">
+                    <div class="summary-pill">
+                        Revenue
+                        <strong id="heroRevenue">Rs0</strong>
+                    </div>
+                    <div class="summary-pill">
+                        Salaries
+                        <strong id="heroSalary">Rs0</strong>
+                    </div>
+                    <div class="summary-pill">
+                        Expenses
+                        <strong id="heroExpense">Rs0</strong>
+                    </div>
+                    <div class="summary-pill">
+                        Net Balance
+                        <strong id="heroNet">Rs0</strong>
+                    </div>
+                </div>
+            </div>
 
             <!-- Add Entry Page -->
             <div id="add-entry-page" class="page">
@@ -647,6 +874,211 @@
                 </div>
             </div>
 
+            <!-- Staff Salary Page -->
+            <div id="staff-salary-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Staff Salary</h1>
+                    <button class="btn btn-secondary" onclick="clearSalaryData()">Clear Salary Data</button>
+                </div>
+
+                <div class="form-section">
+                    <form onsubmit="handleAddSalary(event)">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Add Salary Payment</h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Payment Date *</label>
+                                <input type="date" class="form-input" id="salaryDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Staff Name *</label>
+                                <input type="text" class="form-input" id="salaryStaffName" placeholder="Enter staff name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Role / Department</label>
+                                <input type="text" class="form-input" id="salaryRole" placeholder="Designer, Editor, Operations">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Salary Amount *</label>
+                                <input type="number" class="form-input" id="salaryAmount" placeholder="25000" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Payment Mode</label>
+                                <select class="form-select" id="salaryMode">
+                                    <option>Bank Transfer</option>
+                                    <option>Cash</option>
+                                    <option>UPI</option>
+                                    <option>Cheque</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reference</label>
+                                <input type="text" class="form-input" id="salaryReference" placeholder="Transaction or payroll reference">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-input" id="salaryNotes" placeholder="Optional payroll notes..." style="min-height: 90px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="btn btn-primary">Save Salary</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetSalaryForm()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="card">
+                        <div class="card-title">Total Salary Payout</div>
+                        <div class="card-value" id="salaryTotalAmount">Rs0</div>
+                        <div class="card-subtitle">All staff salary records</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Staff Records</div>
+                        <div class="card-value" id="salaryRecordCount">0</div>
+                        <div class="card-subtitle">Saved salary entries</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Salary Ledger</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Staff Name</th>
+                                <th>Role</th>
+                                <th>Mode</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salaryTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                    No salary entries yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Expenses Page -->
+            <div id="expenses-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Expenses</h1>
+                    <button class="btn btn-secondary" onclick="clearExpenseData()">Clear Expense Data</button>
+                </div>
+
+                <div class="form-section">
+                    <form onsubmit="handleAddExpense(event)">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Add Business Expense</h3>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Expense Date *</label>
+                                <input type="date" class="form-input" id="expenseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select class="form-select" id="expenseCategory" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option>Software</option>
+                                    <option>Travel</option>
+                                    <option>Office</option>
+                                    <option>Marketing</option>
+                                    <option>Utility</option>
+                                    <option>Freelance</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expense Title *</label>
+                                <input type="text" class="form-input" id="expenseTitle" placeholder="Describe the expense" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Amount *</label>
+                                <input type="number" class="form-input" id="expenseAmount" placeholder="1500" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Paid Via</label>
+                                <select class="form-select" id="expenseMode">
+                                    <option>UPI</option>
+                                    <option>Card</option>
+                                    <option>Cash</option>
+                                    <option>Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vendor</label>
+                                <input type="text" class="form-input" id="expenseVendor" placeholder="Vendor or supplier">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-input" id="expenseNotes" placeholder="Optional expense notes..." style="min-height: 90px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="btn btn-primary">Save Expense</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetExpenseForm()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="card">
+                        <div class="card-title">Total Expenses</div>
+                        <div class="card-value" id="expenseTotalAmount">Rs0</div>
+                        <div class="card-subtitle">All saved business expenses</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Expense Records</div>
+                        <div class="card-value" id="expenseRecordCount">0</div>
+                        <div class="card-subtitle">Saved expense entries</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Expense Ledger</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Vendor</th>
+                                <th>Paid Via</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                    No expense entries yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Google Sheets Page -->
             <div id="google-sheets-page" class="page hidden">
                 <div class="page-header">
@@ -751,17 +1183,32 @@
                     <div class="card">
                         <div class="card-title">Total Working Hour/Qty</div>
                         <div class="card-value" id="reportTotalHours">0</div>
-                        <div class="card-subtitle">All time</div>
+                        <div class="card-subtitle">Filtered work volume</div>
                     </div>
                     <div class="card">
                         <div class="card-title">Total Revenue</div>
                         <div class="card-value" id="reportTotalRevenue">Rs0</div>
-                        <div class="card-subtitle">Without tax</div>
+                        <div class="card-subtitle">Filtered billable value</div>
                     </div>
                     <div class="card">
                         <div class="card-title">Average Rate</div>
                         <div class="card-value" id="reportAverageRate">Rs0</div>
                         <div class="card-subtitle">Revenue per hour</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Staff Salary</div>
+                        <div class="card-value" id="reportSalaryTotal">Rs0</div>
+                        <div class="card-subtitle">Filtered payout total</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Business Expenses</div>
+                        <div class="card-value" id="reportExpenseTotal">Rs0</div>
+                        <div class="card-subtitle">Filtered expense total</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Net Balance</div>
+                        <div class="card-value" id="reportNetBalance">Rs0</div>
+                        <div class="card-subtitle">Revenue minus overhead</div>
                     </div>
                     <div class="card">
                         <div class="card-title">Total Entries</div>
@@ -796,13 +1243,19 @@
     <script>
         // Initialize
         const STORAGE_KEY = 'workEntries';
+        const SALARY_STORAGE_KEY = 'salaryEntries';
+        const EXPENSE_STORAGE_KEY = 'expenseEntries';
         const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
         const COMPANY_OPTIONS_KEY = 'companyOptions';
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
         let workEntries = loadEntriesFromStorage();
+        let salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
+        let expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
 
         // Set today's date as default
         document.getElementById('entryDate').valueAsDate = new Date();
+        document.getElementById('salaryDate').valueAsDate = new Date();
+        document.getElementById('expenseDate').valueAsDate = new Date();
 
         // Calculate amount on input change
         document.getElementById('entryHours').addEventListener('input', calculateAmount);
@@ -826,19 +1279,31 @@
             }
         });
 
-        function loadEntriesFromStorage() {
+        function loadCollectionFromStorage(key) {
             try {
-                const savedEntries = localStorage.getItem(STORAGE_KEY);
+                const savedEntries = localStorage.getItem(key);
                 return savedEntries ? JSON.parse(savedEntries) : [];
             } catch (error) {
-                console.error('Unable to read saved entries from browser storage.', error);
-                localStorage.removeItem(STORAGE_KEY);
+                console.error('Unable to read saved collection from browser storage.', error);
+                localStorage.removeItem(key);
                 return [];
             }
         }
 
+        function loadEntriesFromStorage() {
+            return loadCollectionFromStorage(STORAGE_KEY);
+        }
+
         function saveEntriesToStorage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(workEntries));
+        }
+
+        function saveSalaryEntriesToStorage() {
+            localStorage.setItem(SALARY_STORAGE_KEY, JSON.stringify(salaryEntries));
+        }
+
+        function saveExpenseEntriesToStorage() {
+            localStorage.setItem(EXPENSE_STORAGE_KEY, JSON.stringify(expenseEntries));
         }
 
         function loadCompanyOptions() {
@@ -1004,6 +1469,225 @@
             alert('Google Sheet URL saved.');
         }
 
+        function updateHeroSummary() {
+            const revenue = workEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const salaryTotal = salaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const expenseTotal = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netBalance = revenue - salaryTotal - expenseTotal;
+
+            document.getElementById('heroRevenue').textContent = 'Rs' + revenue.toFixed(2);
+            document.getElementById('heroSalary').textContent = 'Rs' + salaryTotal.toFixed(2);
+            document.getElementById('heroExpense').textContent = 'Rs' + expenseTotal.toFixed(2);
+            document.getElementById('heroNet').textContent = 'Rs' + netBalance.toFixed(2);
+        }
+
+        function handleAddSalary(event) {
+            event.preventDefault();
+
+            const date = document.getElementById('salaryDate').value;
+            const staffName = document.getElementById('salaryStaffName').value.trim();
+            const role = document.getElementById('salaryRole').value.trim();
+            const amount = parseFloat(document.getElementById('salaryAmount').value);
+            const mode = document.getElementById('salaryMode').value;
+            const reference = document.getElementById('salaryReference').value.trim();
+            const notes = document.getElementById('salaryNotes').value.trim();
+
+            if (!staffName || !Number.isFinite(amount)) {
+                alert('Please enter a valid staff name and salary amount.');
+                return;
+            }
+
+            salaryEntries.push({
+                id: Date.now(),
+                date,
+                staffName,
+                role,
+                amount,
+                mode,
+                reference,
+                notes
+            });
+
+            saveSalaryEntriesToStorage();
+            resetSalaryForm();
+            updateAllStats();
+            alert('Salary entry saved successfully.');
+        }
+
+        function resetSalaryForm() {
+            document.getElementById('salaryDate').valueAsDate = new Date();
+            document.getElementById('salaryStaffName').value = '';
+            document.getElementById('salaryRole').value = '';
+            document.getElementById('salaryAmount').value = '';
+            document.getElementById('salaryMode').value = 'Bank Transfer';
+            document.getElementById('salaryReference').value = '';
+            document.getElementById('salaryNotes').value = '';
+        }
+
+        function displaySalaryEntries() {
+            const tbody = document.getElementById('salaryTableBody');
+            const totalAmount = salaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+
+            document.getElementById('salaryTotalAmount').textContent = 'Rs' + totalAmount.toFixed(2);
+            document.getElementById('salaryRecordCount').textContent = salaryEntries.length;
+
+            if (salaryEntries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No salary entries yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = salaryEntries.map((entry, index) => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td><strong>${entry.staffName}</strong></td>
+                    <td>${entry.role || '-'}</td>
+                    <td>${entry.mode}</td>
+                    <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
+                    <td>${entry.reference || '-'}</td>
+                    <td><button class="action-btn" onclick="deleteSalaryEntry(${index})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteSalaryEntry(index) {
+            if (confirm('Delete this salary entry?')) {
+                salaryEntries.splice(index, 1);
+                saveSalaryEntriesToStorage();
+                updateAllStats();
+            }
+        }
+
+        function clearSalaryData() {
+            if (confirm('Are you sure? This will delete all salary entries.')) {
+                salaryEntries = [];
+                saveSalaryEntriesToStorage();
+                updateAllStats();
+                alert('All salary data cleared.');
+            }
+        }
+
+        function handleAddExpense(event) {
+            event.preventDefault();
+
+            const date = document.getElementById('expenseDate').value;
+            const category = document.getElementById('expenseCategory').value;
+            const title = document.getElementById('expenseTitle').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const mode = document.getElementById('expenseMode').value;
+            const vendor = document.getElementById('expenseVendor').value.trim();
+            const notes = document.getElementById('expenseNotes').value.trim();
+
+            if (!category || !title || !Number.isFinite(amount)) {
+                alert('Please enter a valid category, title, and amount.');
+                return;
+            }
+
+            expenseEntries.push({
+                id: Date.now(),
+                date,
+                category,
+                title,
+                amount,
+                mode,
+                vendor,
+                notes
+            });
+
+            saveExpenseEntriesToStorage();
+            resetExpenseForm();
+            updateAllStats();
+            alert('Expense entry saved successfully.');
+        }
+
+        function resetExpenseForm() {
+            document.getElementById('expenseDate').valueAsDate = new Date();
+            document.getElementById('expenseCategory').value = '';
+            document.getElementById('expenseTitle').value = '';
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseMode').value = 'UPI';
+            document.getElementById('expenseVendor').value = '';
+            document.getElementById('expenseNotes').value = '';
+        }
+
+        function displayExpenseEntries() {
+            const tbody = document.getElementById('expenseTableBody');
+            const totalAmount = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+
+            document.getElementById('expenseTotalAmount').textContent = 'Rs' + totalAmount.toFixed(2);
+            document.getElementById('expenseRecordCount').textContent = expenseEntries.length;
+
+            if (expenseEntries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No expense entries yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = expenseEntries.map((entry, index) => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.category}</td>
+                    <td><strong>${entry.title}</strong></td>
+                    <td>${entry.vendor || '-'}</td>
+                    <td>${entry.mode}</td>
+                    <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
+                    <td><button class="action-btn" onclick="deleteExpenseEntry(${index})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteExpenseEntry(index) {
+            if (confirm('Delete this expense entry?')) {
+                expenseEntries.splice(index, 1);
+                saveExpenseEntriesToStorage();
+                updateAllStats();
+            }
+        }
+
+        function clearExpenseData() {
+            if (confirm('Are you sure? This will delete all expense entries.')) {
+                expenseEntries = [];
+                saveExpenseEntriesToStorage();
+                updateAllStats();
+                alert('All expense data cleared.');
+            }
+        }
+
+        function getFilteredNonBillingEntries(entries) {
+            const dateFilter = document.getElementById('reportDateFilter').value;
+            const startDateValue = document.getElementById('reportStartDate').value;
+            const endDateValue = document.getElementById('reportEndDate').value;
+            const today = new Date();
+
+            return entries.filter(entry => {
+                const entryDate = new Date(entry.date);
+                if (Number.isNaN(entryDate.getTime())) {
+                    return false;
+                }
+
+                if (dateFilter === 'thisMonth') {
+                    return entryDate.getMonth() === today.getMonth() && entryDate.getFullYear() === today.getFullYear();
+                }
+
+                if (dateFilter === 'last30' || dateFilter === 'last90') {
+                    const days = dateFilter === 'last30' ? 30 : 90;
+                    const cutoff = new Date(today);
+                    cutoff.setHours(0, 0, 0, 0);
+                    cutoff.setDate(cutoff.getDate() - days);
+                    return entryDate >= cutoff && entryDate <= today;
+                }
+
+                if (dateFilter === 'custom') {
+                    if (startDateValue && entry.date < startDateValue) {
+                        return false;
+                    }
+                    if (endDateValue && entry.date > endDateValue) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+
         function handleAddEntry(event) {
             event.preventDefault();
 
@@ -1145,6 +1829,10 @@
                 displayEntries();
             } else if (page === 'generate-bills') {
                 updateBillStats();
+            } else if (page === 'staff-salary') {
+                displaySalaryEntries();
+            } else if (page === 'expenses') {
+                displayExpenseEntries();
             } else if (page === 'reports') {
                 updateReports();
             }
@@ -1283,6 +1971,8 @@
 
         function updateReports() {
             const filteredEntries = getFilteredReportEntries();
+            const filteredSalaryEntries = getFilteredNonBillingEntries(salaryEntries);
+            const filteredExpenseEntries = getFilteredNonBillingEntries(expenseEntries);
             let totalHours = 0;
             let totalAmount = 0;
             let totalEntries = filteredEntries.length;
@@ -1300,10 +1990,16 @@
             });
 
             const averageRate = totalHours ? totalAmount / totalHours : 0;
+            const totalSalary = filteredSalaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpense = filteredExpenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netBalance = totalAmount - totalSalary - totalExpense;
 
             document.getElementById('reportTotalHours').textContent = totalHours.toFixed(1);
             document.getElementById('reportTotalRevenue').textContent = 'Rs' + totalAmount.toFixed(2);
             document.getElementById('reportAverageRate').textContent = 'Rs' + averageRate.toFixed(2);
+            document.getElementById('reportSalaryTotal').textContent = 'Rs' + totalSalary.toFixed(2);
+            document.getElementById('reportExpenseTotal').textContent = 'Rs' + totalExpense.toFixed(2);
+            document.getElementById('reportNetBalance').textContent = 'Rs' + netBalance.toFixed(2);
             document.getElementById('reportEntries').textContent = totalEntries;
 
             const tbody = document.getElementById('companyBreakdownBody');
@@ -1323,13 +2019,18 @@
 
         function updateAllStats() {
             populateReportCompanyFilter();
+            updateHeroSummary();
             updateBillStats();
             updateReports();
             displayEntries();
+            displaySalaryEntries();
+            displayExpenseEntries();
         }
 
         function loadDataFromStorage() {
             workEntries = loadEntriesFromStorage();
+            salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
+            expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
             updateAllStats();
             alert('Data refreshed.');
         }
