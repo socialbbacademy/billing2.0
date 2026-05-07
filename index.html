@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -610,6 +610,11 @@
             background: rgba(255, 255, 255, 0.92);
             border-color: rgba(91, 95, 239, 0.15);
         }
+
+        /* Force date inputs to show dd/mm/yyyy placeholder style */
+        input[type="date"]::-webkit-datetime-edit-day-field { order: 1; }
+        input[type="date"]::-webkit-datetime-edit-month-field { order: 2; }
+        input[type="date"]::-webkit-datetime-edit-year-field { order: 3; }
 
         .hidden {
             display: none;
@@ -1294,21 +1299,28 @@
         }
 
         // ── Firebase Read (real-time listeners) ─────────────────────────
+        let _skipNextWorkListener = false;
+        let _skipNextSalaryListener = false;
+        let _skipNextExpenseListener = false;
+
         function initFirebaseListeners() {
             showLoading('Firebase-ൽ നിന്ന് data load ചെയ്യുന്നു...');
 
             db.ref('workEntries').on('value', snapshot => {
+                if (_skipNextWorkListener) { _skipNextWorkListener = false; return; }
                 workEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
                 updateAllStats();
                 hideLoading();
             });
 
             db.ref('salaryEntries').on('value', snapshot => {
+                if (_skipNextSalaryListener) { _skipNextSalaryListener = false; return; }
                 salaryEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
                 updateAllStats();
             });
 
             db.ref('expenseEntries').on('value', snapshot => {
+                if (_skipNextExpenseListener) { _skipNextExpenseListener = false; return; }
                 expenseEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
                 updateAllStats();
             });
@@ -1316,18 +1328,21 @@
 
         // ── Firebase Write Helpers ───────────────────────────────────────
         function saveEntriesToStorage() {
+            _skipNextWorkListener = true;
             const obj = {};
             workEntries.forEach(e => { obj[e.id] = e; });
             db.ref('workEntries').set(obj);
         }
 
         function saveSalaryEntriesToStorage() {
+            _skipNextSalaryListener = true;
             const obj = {};
             salaryEntries.forEach(e => { obj[e.id] = e; });
             db.ref('salaryEntries').set(obj);
         }
 
         function saveExpenseEntriesToStorage() {
+            _skipNextExpenseListener = true;
             const obj = {};
             expenseEntries.forEach(e => { obj[e.id] = e; });
             db.ref('expenseEntries').set(obj);
@@ -1638,10 +1653,13 @@
                 notes
             });
 
-            saveSalaryEntriesToStorage();
+            // Write to Firebase directly (not via saveSalaryEntriesToStorage to avoid skip flag)
+            const entry = salaryEntries[salaryEntries.length - 1];
+            db.ref('salaryEntries/' + entry.id).set(entry);
             resetSalaryForm();
-            updateAllStats();
-            alert('Salary entry saved successfully.');
+            displaySalaryEntries();
+            updateHeroSummary();
+            alert('ശമ്പളം സേവ് ചെയ്തു ✅');
         }
 
         function resetSalaryForm() {
@@ -1688,10 +1706,12 @@
         }
 
         function deleteSalaryEntry(index) {
-            if (confirm('Delete this salary entry?')) {
+            if (confirm('ഈ ശമ്പള entry delete ചെയ്യണോ?')) {
+                const entry = salaryEntries[index];
+                db.ref('salaryEntries/' + entry.id).remove();
                 salaryEntries.splice(index, 1);
-                saveSalaryEntriesToStorage();
-                updateAllStats();
+                displaySalaryEntries();
+                updateHeroSummary();
             }
         }
 
@@ -1720,7 +1740,7 @@
                 return;
             }
 
-            expenseEntries.push({
+            const newExpense = {
                 id: Date.now(),
                 date,
                 category,
@@ -1729,12 +1749,13 @@
                 mode,
                 vendor,
                 notes
-            });
-
-            saveExpenseEntriesToStorage();
+            };
+            expenseEntries.push(newExpense);
+            db.ref('expenseEntries/' + newExpense.id).set(newExpense);
             resetExpenseForm();
-            updateAllStats();
-            alert('Expense entry saved successfully.');
+            displayExpenseEntries();
+            updateHeroSummary();
+            alert('ചിലവ് സേവ് ചെയ്തു ✅');
         }
 
         function resetExpenseForm() {
@@ -1773,10 +1794,12 @@
         }
 
         function deleteExpenseEntry(index) {
-            if (confirm('Delete this expense entry?')) {
+            if (confirm('ഈ ചിലവ് entry delete ചെയ്യണോ?')) {
+                const entry = expenseEntries[index];
+                db.ref('expenseEntries/' + entry.id).remove();
                 expenseEntries.splice(index, 1);
-                saveExpenseEntriesToStorage();
-                updateAllStats();
+                displayExpenseEntries();
+                updateHeroSummary();
             }
         }
 
@@ -1883,11 +1906,13 @@
             };
 
             workEntries.push(entry);
-            saveEntriesToStorage();
+            // Write only this new entry to Firebase (fast)
+            db.ref('workEntries/' + entry.id).set(entry);
             populateReportCompanyFilter();
             alert('Entry saved successfully! ✅');
             resetForm();
-            updateAllStats();
+            displayEntries();
+            updateHeroSummary();
         }
 
         function resetForm() {
@@ -1930,9 +1955,14 @@
 
         async function deleteEntry(index) {
             if (confirm('ഈ entry delete ചെയ്യണോ?')) {
+                const entry = workEntries[index];
+                // Remove only this one entry from Firebase instantly
+                await db.ref('workEntries/' + entry.id).remove();
+                // Update local array immediately for instant UI feedback
                 workEntries.splice(index, 1);
-                saveEntriesToStorage();
-                updateAllStats();
+                displayEntries();
+                updateHeroSummary();
+                populateReportCompanyFilter();
             }
         }
 
