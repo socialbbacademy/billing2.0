@@ -24,7 +24,7 @@
             --border: #e0e0e0;
             --text-primary: #1a1a1a;
             --text-secondary: #666;
-            --transition: all 0.3s ease;
+            --transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
         body {
@@ -484,11 +484,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            background:
-                radial-gradient(circle at 15% 20%, rgba(91, 95, 239, 0.18), transparent 28%),
-                radial-gradient(circle at 85% 15%, rgba(255, 77, 141, 0.16), transparent 24%),
-                radial-gradient(circle at 70% 80%, rgba(0, 183, 194, 0.16), transparent 25%),
-                linear-gradient(180deg, #fef8ff 0%, #f3f8ff 47%, #fffaf0 100%);
+            background: linear-gradient(160deg, #f5f0ff 0%, #f0f5ff 50%, #fff8f0 100%);
             z-index: -2;
         }
 
@@ -505,6 +501,7 @@
                 linear-gradient(180deg, #1e2148 0%, #5b5fef 50%, #ff4d8d 100%);
             box-shadow: 24px 0 48px rgba(43, 31, 84, 0.22);
             border-right: 1px solid rgba(255, 255, 255, 0.14);
+            will-change: transform;
         }
 
         .logo {
@@ -513,7 +510,6 @@
 
         .nav-link {
             border: 1px solid transparent;
-            backdrop-filter: blur(8px);
         }
 
         .nav-link:hover,
@@ -527,9 +523,9 @@
             margin: 1rem 1rem 0;
             border-radius: 22px;
             border: 1px solid rgba(91, 95, 239, 0.12);
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(18px);
-            box-shadow: 0 18px 40px rgba(59, 69, 115, 0.12);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 16px rgba(59, 69, 115, 0.10);
         }
 
         .container {
@@ -573,10 +569,9 @@
         .form-section,
         .card,
         .data-table {
-            background: rgba(255, 255, 255, 0.88);
+            background: rgba(255, 255, 255, 0.97);
             border: 1px solid rgba(91, 95, 239, 0.12);
-            box-shadow: 0 20px 40px rgba(43, 31, 84, 0.08);
-            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 16px rgba(43, 31, 84, 0.07);
         }
 
         .table-header,
@@ -1280,11 +1275,20 @@
         document.getElementById('salaryDate').valueAsDate = new Date();
         document.getElementById('expenseDate').valueAsDate = new Date();
 
+        // Debounce utility for input handlers
+        function debounce(fn, ms) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), ms);
+            };
+        }
+
         // Calculate amount on input change
-        document.getElementById('entryHours').addEventListener('input', calculateAmount);
-        document.getElementById('entryRate').addEventListener('input', calculateAmount);
-        document.getElementById('salaryTotalSalary').addEventListener('input', calculateSalaryBalance);
-        document.getElementById('salaryAdvancePayment').addEventListener('input', calculateSalaryBalance);
+        document.getElementById('entryHours').addEventListener('input', debounce(calculateAmount, 80));
+        document.getElementById('entryRate').addEventListener('input', debounce(calculateAmount, 80));
+        document.getElementById('salaryTotalSalary').addEventListener('input', debounce(calculateSalaryBalance, 80));
+        document.getElementById('salaryAdvancePayment').addEventListener('input', debounce(calculateSalaryBalance, 80));
         document.getElementById('entryCompany').addEventListener('change', toggleNewCompanyInput);
         document.getElementById('reportDateFilter').addEventListener('change', toggleCustomReportDates);
 
@@ -1338,17 +1342,26 @@
             localStorage.setItem(EXPENSE_STORAGE_KEY, JSON.stringify(expenseEntries));
         }
 
+        // Cache: track current active page to avoid redundant renders
+        let _currentPage = 'add-entry';
+        // Cache company options in memory to avoid repeated localStorage reads
+        let _companyOptionsCache = null;
+
         function loadCompanyOptions() {
+            if (_companyOptionsCache) return _companyOptionsCache;
             try {
                 const savedCompanies = JSON.parse(localStorage.getItem(COMPANY_OPTIONS_KEY) || '[]');
-                return [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
+                _companyOptionsCache = [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
+                return _companyOptionsCache;
             } catch (error) {
                 console.error('Unable to read saved company options.', error);
-                return [...DEFAULT_COMPANIES].sort();
+                _companyOptionsCache = [...DEFAULT_COMPANIES].sort();
+                return _companyOptionsCache;
             }
         }
 
         function saveCompanyOptions(companies) {
+            _companyOptionsCache = companies; // update cache
             localStorage.setItem(COMPANY_OPTIONS_KEY, JSON.stringify(companies));
         }
 
@@ -1866,6 +1879,7 @@
                 navEvent.preventDefault();
             }
 
+            _currentPage = page;
             document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
             document.getElementById(`${page}-page`).classList.remove('hidden');
 
@@ -2069,14 +2083,18 @@
         function updateAllStats() {
             populateReportCompanyFilter();
             updateHeroSummary();
-            updateBillStats();
-            updateReports();
-            displayEntries();
-            displaySalaryEntries();
-            displayExpenseEntries();
+            // Only update the active page's heavy table renders
+            switch (_currentPage) {
+                case 'view-entries':    displayEntries(); break;
+                case 'generate-bills':  updateBillStats(); break;
+                case 'staff-salary':    displaySalaryEntries(); break;
+                case 'expenses':        displayExpenseEntries(); break;
+                case 'reports':         updateReports(); break;
+            }
         }
 
         function loadDataFromStorage() {
+            _companyOptionsCache = null; // invalidate cache
             workEntries = loadEntriesFromStorage();
             salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
             expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
@@ -2104,10 +2122,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
