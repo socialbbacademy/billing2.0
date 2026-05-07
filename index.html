@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,7 @@
             --border: #e0e0e0;
             --text-primary: #1a1a1a;
             --text-secondary: #666;
-            --transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            --transition: all 0.3s ease;
         }
 
         body {
@@ -484,7 +484,11 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: linear-gradient(160deg, #f5f0ff 0%, #f0f5ff 50%, #fff8f0 100%);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(91, 95, 239, 0.18), transparent 28%),
+                radial-gradient(circle at 85% 15%, rgba(255, 77, 141, 0.16), transparent 24%),
+                radial-gradient(circle at 70% 80%, rgba(0, 183, 194, 0.16), transparent 25%),
+                linear-gradient(180deg, #fef8ff 0%, #f3f8ff 47%, #fffaf0 100%);
             z-index: -2;
         }
 
@@ -501,7 +505,6 @@
                 linear-gradient(180deg, #1e2148 0%, #5b5fef 50%, #ff4d8d 100%);
             box-shadow: 24px 0 48px rgba(43, 31, 84, 0.22);
             border-right: 1px solid rgba(255, 255, 255, 0.14);
-            will-change: transform;
         }
 
         .logo {
@@ -510,6 +513,7 @@
 
         .nav-link {
             border: 1px solid transparent;
+            backdrop-filter: blur(8px);
         }
 
         .nav-link:hover,
@@ -523,9 +527,9 @@
             margin: 1rem 1rem 0;
             border-radius: 22px;
             border: 1px solid rgba(91, 95, 239, 0.12);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 16px rgba(59, 69, 115, 0.10);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 18px 40px rgba(59, 69, 115, 0.12);
         }
 
         .container {
@@ -569,9 +573,10 @@
         .form-section,
         .card,
         .data-table {
-            background: rgba(255, 255, 255, 0.97);
+            background: rgba(255, 255, 255, 0.88);
             border: 1px solid rgba(91, 95, 239, 0.12);
-            box-shadow: 0 4px 16px rgba(43, 31, 84, 0.07);
+            box-shadow: 0 20px 40px rgba(43, 31, 84, 0.08);
+            backdrop-filter: blur(16px);
         }
 
         .table-header,
@@ -611,13 +616,149 @@
             border-color: rgba(91, 95, 239, 0.15);
         }
 
-        /* Force date inputs to show dd/mm/yyyy placeholder style */
-        input[type="date"]::-webkit-datetime-edit-day-field { order: 1; }
-        input[type="date"]::-webkit-datetime-edit-month-field { order: 2; }
-        input[type="date"]::-webkit-datetime-edit-year-field { order: 3; }
-
         .hidden {
             display: none;
+        }
+
+        /* Password Modal Styles */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .password-modal.hidden {
+            display: none !important;
+        }
+
+        .password-modal-content {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .password-modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .password-modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .password-modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .password-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .password-input-group input {
+            flex: 1;
+        }
+
+        .password-toggle-btn {
+            padding: 12px 12px;
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .password-toggle-btn:hover {
+            background: var(--border);
+        }
+
+        .password-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .password-error.show {
+            display: block;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .settings-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .settings-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .lock-icon {
+            font-size: 18px;
+        }
+
+        .admin-settings-section {
+            background: #f0f7ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-settings-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
 
         @media (max-width: 768px) {
@@ -635,17 +776,8 @@
             }
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" style="display:flex; position:fixed; inset:0; background:rgba(30,33,72,0.7); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:1rem;">
-        <div style="width:48px;height:48px;border:5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-        <div id="loadingMsg" style="color:white;font-size:16px;font-weight:600;font-family:sans-serif;">Loading...</div>
-    </div>
-    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
@@ -886,8 +1018,31 @@
             <!-- Staff Salary Page -->
             <div id="staff-salary-page" class="page hidden">
                 <div class="page-header">
-                    <h1 class="page-title">Staff Salary</h1>
+                    <h1 class="page-title">Staff Salary <span class="admin-status"></span></h1>
                     <button class="btn btn-secondary" onclick="clearSalaryData()">Clear Salary Data</button>
+                </div>
+
+                <!-- Admin Password Settings -->
+                <div id="adminSettingsSection" class="admin-settings-section" style="display: none;">
+                    <div class="admin-settings-title">🔐 Admin Settings</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Current Admin Password</label>
+                            <input type="password" id="currentPassword" class="form-input" placeholder="Enter current password" style="background: #fff;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Admin Password</label>
+                            <input type="password" id="newPassword" class="form-input" placeholder="Enter new password" style="background: #fff;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" style="background: #fff;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="updateAdminPassword()">Update Password</button>
+                        <button class="btn btn-secondary" onclick="logoutAdmin()">Logout Admin</button>
+                    </div>
                 </div>
 
                 <div class="form-section">
@@ -1272,114 +1427,173 @@
         </div>
     </div>
 
-    <script>
-        // ── Firebase Setup ──────────────────────────────────────────────
-        const firebaseConfig = {
-            apiKey: "AIzaSyDoNwaiYyR_UQDMajKFqUJikQ0u468P_OE",
-            databaseURL: "https://beacon-blitz-default-rtdb.firebaseio.com",
-            projectId: "beacon-blitz"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    <!-- Password Modal for Admin Authentication -->
+    <div id="passwordModal" class="password-modal hidden">
+        <div class="password-modal-content">
+            <div class="password-modal-header">
+                <span class="lock-icon">🔐</span>
+                Admin Access Required
+            </div>
+            <div class="password-modal-body">
+                <label class="form-label">Enter Admin Password to view Salary Information</label>
+                <div class="password-input-group">
+                    <input type="password" id="passwordInput" class="form-input" placeholder="Enter password" onkeypress="if(event.key==='Enter') validateAdminPassword();">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
+                </div>
+                <div id="passwordError" class="password-error">Incorrect password. Please try again.</div>
+            </div>
+            <div class="password-modal-footer">
+                <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="validateAdminPassword()">Unlock</button>
+            </div>
+        </div>
+    </div>
 
-        // ── App State ───────────────────────────────────────────────────
+    <script>
+        // Admin Password Protection System
+        const ADMIN_PASSWORD_KEY = 'adminPassword';
+        const ADMIN_SESSION_KEY = 'adminSessionActive';
+        const ADMIN_SESSION_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+        let isAdminAuthenticated = false;
+
+        // Initialize admin session from storage
+        function initAdminSession() {
+            const sessionData = sessionStorage.getItem(ADMIN_SESSION_KEY);
+            if (sessionData) {
+                const sessionTime = parseInt(sessionData);
+                if (Date.now() - sessionTime < ADMIN_SESSION_DURATION) {
+                    isAdminAuthenticated = true;
+                    updateAdminUI();
+                } else {
+                    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+                }
+            }
+        }
+
+        function getAdminPassword() {
+            return localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin123';
+        }
+
+        function setAdminPassword(newPassword) {
+            localStorage.setItem(ADMIN_PASSWORD_KEY, newPassword);
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('passwordInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function validateAdminPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            const correctPassword = getAdminPassword();
+
+            if (inputPassword === correctPassword) {
+                isAdminAuthenticated = true;
+                sessionStorage.setItem(ADMIN_SESSION_KEY, Date.now().toString());
+                closePasswordModal();
+                updateAdminUI();
+                displaySalaryEntries();
+                alert('Admin access granted! You can now view salary information.');
+            } else {
+                const errorElement = document.getElementById('passwordError');
+                errorElement.classList.add('show');
+                document.getElementById('passwordInput').value = '';
+                setTimeout(() => {
+                    errorElement.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function updateAdminUI() {
+            const adminBadges = document.querySelectorAll('.admin-status');
+            if (isAdminAuthenticated) {
+                adminBadges.forEach(badge => {
+                    badge.innerHTML = '<span class="admin-badge">✓ Admin Access</span>';
+                });
+            }
+        }
+
+        function checkAdminAccess(requiredAccess = 'salary') {
+            if (!isAdminAuthenticated) {
+                document.getElementById('passwordModal').classList.remove('hidden');
+                document.getElementById('passwordInput').focus();
+                return false;
+            }
+            return true;
+        }
+
+        function logoutAdmin() {
+            isAdminAuthenticated = false;
+            sessionStorage.removeItem(ADMIN_SESSION_KEY);
+            updateAdminUI();
+            alert('Admin session ended.');
+            switchPage('add-entry');
+        }
+
+        function updateAdminPassword() {
+            if (!isAdminAuthenticated) {
+                alert('You need to be logged in as admin to change the password.');
+                return;
+            }
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const correctPassword = getAdminPassword();
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all password fields.');
+                return;
+            }
+
+            if (currentPassword !== correctPassword) {
+                alert('Current password is incorrect.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match.');
+                return;
+            }
+
+            if (newPassword.length < 4) {
+                alert('New password must be at least 4 characters long.');
+                return;
+            }
+
+            setAdminPassword(newPassword);
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            alert('Admin password updated successfully!');
+        }
+
+        // Initialize
+        const STORAGE_KEY = 'workEntries';
+        const SALARY_STORAGE_KEY = 'salaryEntries';
+        const EXPENSE_STORAGE_KEY = 'expenseEntries';
+        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
         const COMPANY_OPTIONS_KEY = 'companyOptions';
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
-        let workEntries = [];
-        let salaryEntries = [];
-        let expenseEntries = [];
-
-        // Show loading overlay while Firebase loads
-        function showLoading(msg) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingMsg').textContent = msg || 'Loading data...';
-        }
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        // ── Firebase Read (real-time listeners) ─────────────────────────
-        let _skipNextWorkListener = false;
-        let _skipNextSalaryListener = false;
-        let _skipNextExpenseListener = false;
-
-        function initFirebaseListeners() {
-            showLoading('Firebase-ൽ നിന്ന് data load ചെയ്യുന്നു...');
-
-            db.ref('workEntries').on('value', snapshot => {
-                if (_skipNextWorkListener) { _skipNextWorkListener = false; return; }
-                workEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
-                updateAllStats();
-                hideLoading();
-            });
-
-            db.ref('salaryEntries').on('value', snapshot => {
-                if (_skipNextSalaryListener) { _skipNextSalaryListener = false; return; }
-                salaryEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
-                updateAllStats();
-            });
-
-            db.ref('expenseEntries').on('value', snapshot => {
-                if (_skipNextExpenseListener) { _skipNextExpenseListener = false; return; }
-                expenseEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
-                updateAllStats();
-            });
-        }
-
-        // ── Firebase Write Helpers ───────────────────────────────────────
-        function saveEntriesToStorage() {
-            _skipNextWorkListener = true;
-            const obj = {};
-            workEntries.forEach(e => { obj[e.id] = e; });
-            db.ref('workEntries').set(obj);
-        }
-
-        function saveSalaryEntriesToStorage() {
-            _skipNextSalaryListener = true;
-            const obj = {};
-            salaryEntries.forEach(e => { obj[e.id] = e; });
-            db.ref('salaryEntries').set(obj);
-        }
-
-        function saveExpenseEntriesToStorage() {
-            _skipNextExpenseListener = true;
-            const obj = {};
-            expenseEntries.forEach(e => { obj[e.id] = e; });
-            db.ref('expenseEntries').set(obj);
-        }
-
-        // Legacy stubs (Google Sheets sync kept but optional)
-        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
-        function loadCollectionFromStorage(key) { return []; }
-        function loadEntriesFromStorage() { return []; }
+        let workEntries = loadEntriesFromStorage();
+        let salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
+        let expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
 
         // Set today's date as default
         document.getElementById('entryDate').valueAsDate = new Date();
         document.getElementById('salaryDate').valueAsDate = new Date();
         document.getElementById('expenseDate').valueAsDate = new Date();
 
-        // Date format helper: yyyy-mm-dd → dd/mm/yyyy
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const parts = dateStr.split('-');
-            if (parts.length !== 3) return dateStr;
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-
-        // Debounce utility for input handlers
-        function debounce(fn, ms) {
-            let timer;
-            return function(...args) {
-                clearTimeout(timer);
-                timer = setTimeout(() => fn.apply(this, args), ms);
-            };
-        }
-
         // Calculate amount on input change
-        document.getElementById('entryHours').addEventListener('input', debounce(calculateAmount, 80));
-        document.getElementById('entryRate').addEventListener('input', debounce(calculateAmount, 80));
-        document.getElementById('salaryTotalSalary').addEventListener('input', debounce(calculateSalaryBalance, 80));
-        document.getElementById('salaryAdvancePayment').addEventListener('input', debounce(calculateSalaryBalance, 80));
+        document.getElementById('entryHours').addEventListener('input', calculateAmount);
+        document.getElementById('entryRate').addEventListener('input', calculateAmount);
+        document.getElementById('salaryTotalSalary').addEventListener('input', calculateSalaryBalance);
+        document.getElementById('salaryAdvancePayment').addEventListener('input', calculateSalaryBalance);
         document.getElementById('entryCompany').addEventListener('change', toggleNewCompanyInput);
         document.getElementById('reportDateFilter').addEventListener('change', toggleCustomReportDates);
 
@@ -1433,26 +1647,17 @@
             localStorage.setItem(EXPENSE_STORAGE_KEY, JSON.stringify(expenseEntries));
         }
 
-        // Cache: track current active page to avoid redundant renders
-        let _currentPage = 'add-entry';
-        // Cache company options in memory to avoid repeated localStorage reads
-        let _companyOptionsCache = null;
-
         function loadCompanyOptions() {
-            if (_companyOptionsCache) return _companyOptionsCache;
             try {
                 const savedCompanies = JSON.parse(localStorage.getItem(COMPANY_OPTIONS_KEY) || '[]');
-                _companyOptionsCache = [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
-                return _companyOptionsCache;
+                return [...new Set([...DEFAULT_COMPANIES, ...savedCompanies].filter(Boolean))].sort();
             } catch (error) {
                 console.error('Unable to read saved company options.', error);
-                _companyOptionsCache = [...DEFAULT_COMPANIES].sort();
-                return _companyOptionsCache;
+                return [...DEFAULT_COMPANIES].sort();
             }
         }
 
         function saveCompanyOptions(companies) {
-            _companyOptionsCache = companies; // update cache
             localStorage.setItem(COMPANY_OPTIONS_KEY, JSON.stringify(companies));
         }
 
@@ -1653,13 +1858,10 @@
                 notes
             });
 
-            // Write to Firebase directly (not via saveSalaryEntriesToStorage to avoid skip flag)
-            const entry = salaryEntries[salaryEntries.length - 1];
-            db.ref('salaryEntries/' + entry.id).set(entry);
+            saveSalaryEntriesToStorage();
             resetSalaryForm();
-            displaySalaryEntries();
-            updateHeroSummary();
-            alert('ശമ്പളം സേവ് ചെയ്തു ✅');
+            updateAllStats();
+            alert('Salary entry saved successfully.');
         }
 
         function resetSalaryForm() {
@@ -1675,6 +1877,14 @@
         }
 
         function displaySalaryEntries() {
+            // Show admin settings panel if authenticated
+            const adminSection = document.getElementById('adminSettingsSection');
+            if (isAdminAuthenticated) {
+                adminSection.style.display = 'block';
+            } else {
+                adminSection.style.display = 'none';
+            }
+
             const tbody = document.getElementById('salaryTableBody');
             const totalSalary = salaryEntries.reduce((sum, entry) => sum + entry.totalSalary, 0);
             const totalAdvance = salaryEntries.reduce((sum, entry) => sum + entry.advancePayment, 0);
@@ -1692,7 +1902,7 @@
 
             tbody.innerHTML = salaryEntries.map((entry, index) => `
                 <tr>
-                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.date}</td>
                     <td><strong>${entry.staffName}</strong></td>
                     <td>${entry.role || '-'}</td>
                     <td class="amount-value">Rs${entry.totalSalary.toFixed(2)}</td>
@@ -1706,12 +1916,10 @@
         }
 
         function deleteSalaryEntry(index) {
-            if (confirm('ഈ ശമ്പള entry delete ചെയ്യണോ?')) {
-                const entry = salaryEntries[index];
-                db.ref('salaryEntries/' + entry.id).remove();
+            if (confirm('Delete this salary entry?')) {
                 salaryEntries.splice(index, 1);
-                displaySalaryEntries();
-                updateHeroSummary();
+                saveSalaryEntriesToStorage();
+                updateAllStats();
             }
         }
 
@@ -1740,7 +1948,7 @@
                 return;
             }
 
-            const newExpense = {
+            expenseEntries.push({
                 id: Date.now(),
                 date,
                 category,
@@ -1749,13 +1957,12 @@
                 mode,
                 vendor,
                 notes
-            };
-            expenseEntries.push(newExpense);
-            db.ref('expenseEntries/' + newExpense.id).set(newExpense);
+            });
+
+            saveExpenseEntriesToStorage();
             resetExpenseForm();
-            displayExpenseEntries();
-            updateHeroSummary();
-            alert('ചിലവ് സേവ് ചെയ്തു ✅');
+            updateAllStats();
+            alert('Expense entry saved successfully.');
         }
 
         function resetExpenseForm() {
@@ -1782,7 +1989,7 @@
 
             tbody.innerHTML = expenseEntries.map((entry, index) => `
                 <tr>
-                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.date}</td>
                     <td>${entry.category}</td>
                     <td><strong>${entry.title}</strong></td>
                     <td>${entry.vendor || '-'}</td>
@@ -1794,12 +2001,10 @@
         }
 
         function deleteExpenseEntry(index) {
-            if (confirm('ഈ ചിലവ് entry delete ചെയ്യണോ?')) {
-                const entry = expenseEntries[index];
-                db.ref('expenseEntries/' + entry.id).remove();
+            if (confirm('Delete this expense entry?')) {
                 expenseEntries.splice(index, 1);
-                displayExpenseEntries();
-                updateHeroSummary();
+                saveExpenseEntriesToStorage();
+                updateAllStats();
             }
         }
 
@@ -1906,13 +2111,14 @@
             };
 
             workEntries.push(entry);
-            // Write only this new entry to Firebase (fast)
-            db.ref('workEntries/' + entry.id).set(entry);
+            saveEntriesToStorage();
             populateReportCompanyFilter();
-            alert('Entry saved successfully! ✅');
+
+            const sheetSynced = await syncEntriesToGoogleSheet();
+
+            alert(sheetSynced ? 'Entry saved and Google Sheet updated.' : 'Entry saved successfully.');
             resetForm();
-            displayEntries();
-            updateHeroSummary();
+            updateAllStats();
         }
 
         function resetForm() {
@@ -1939,7 +2145,7 @@
 
             tbody.innerHTML = workEntries.map((entry, index) => `
                 <tr>
-                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.date}</td>
                     <td><strong>${entry.company}</strong></td>
                     <td>${entry.work}</td>
                     <td>${entry.hours} hrs</td>
@@ -1954,15 +2160,11 @@
         }
 
         async function deleteEntry(index) {
-            if (confirm('ഈ entry delete ചെയ്യണോ?')) {
-                const entry = workEntries[index];
-                // Remove only this one entry from Firebase instantly
-                await db.ref('workEntries/' + entry.id).remove();
-                // Update local array immediately for instant UI feedback
+            if (confirm('Delete this entry?')) {
                 workEntries.splice(index, 1);
-                displayEntries();
-                updateHeroSummary();
-                populateReportCompanyFilter();
+                saveEntriesToStorage();
+                await syncEntriesToGoogleSheet();
+                updateAllStats();
             }
         }
 
@@ -1981,7 +2183,14 @@
                 navEvent.preventDefault();
             }
 
-            _currentPage = page;
+            // Check admin access for salary page
+            if (page === 'staff-salary' && !checkAdminAccess('salary')) {
+                if (navEvent && navEvent.currentTarget) {
+                    navEvent.currentTarget.classList.remove('active');
+                }
+                return;
+            }
+
             document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
             document.getElementById(`${page}-page`).classList.remove('hidden');
 
@@ -2185,55 +2394,47 @@
         function updateAllStats() {
             populateReportCompanyFilter();
             updateHeroSummary();
-            // Only update the active page's heavy table renders
-            switch (_currentPage) {
-                case 'view-entries':    displayEntries(); break;
-                case 'generate-bills':  updateBillStats(); break;
-                case 'staff-salary':    displaySalaryEntries(); break;
-                case 'expenses':        displayExpenseEntries(); break;
-                case 'reports':         updateReports(); break;
-            }
+            updateBillStats();
+            updateReports();
+            displayEntries();
+            displaySalaryEntries();
+            displayExpenseEntries();
         }
 
         function loadDataFromStorage() {
-            _companyOptionsCache = null;
-            showLoading('Data refresh ചെയ്യുന്നു...');
-            // Firebase listeners will auto-update; just force a re-read
-            db.ref('workEntries').once('value', snap => {
-                workEntries = snap.val() ? Object.values(snap.val()) : [];
-                db.ref('salaryEntries').once('value', s2 => {
-                    salaryEntries = s2.val() ? Object.values(s2.val()) : [];
-                    db.ref('expenseEntries').once('value', s3 => {
-                        expenseEntries = s3.val() ? Object.values(s3.val()) : [];
-                        updateAllStats();
-                        hideLoading();
-                        alert('Data refreshed.');
-                    });
-                });
-            });
+            workEntries = loadEntriesFromStorage();
+            salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
+            expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
+            updateAllStats();
+            alert('Data refreshed.');
         }
 
         async function clearAllData() {
-            if (confirm('ഉറപ്പാണോ? എല്ലാ entries ഉം permanently delete ആകും!')) {
+            if (confirm('Are you sure? This will delete all entries permanently!')) {
                 workEntries = [];
-                await db.ref('workEntries').remove();
+                saveEntriesToStorage();
+                await syncEntriesToGoogleSheet();
                 alert('All data cleared.');
                 updateAllStats();
             }
         }
 
-        // ── App Startup ─────────────────────────────────────────────────
-        document.getElementById('entryDate').valueAsDate = new Date();
-        document.getElementById('salaryDate').valueAsDate = new Date();
-        document.getElementById('expenseDate').valueAsDate = new Date();
-        if (document.getElementById('googleSheetUrl')) {
-            document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
-        }
-        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded.' : 'Firebase ഉപയോഗിക്കുന്നു — data cloud-ൽ save ആകും.');
+        // Initial load
+        populateEntryCompanyOptions();
+        document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
+        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded. New changes will sync automatically.' : 'No Google Sheet URL saved yet. Entries are still saved in this browser.');
         toggleNewCompanyInput();
         toggleCustomReportDates();
-        populateEntryCompanyOptions();
-        initFirebaseListeners(); // 🔥 Start Firebase
+        updateAllStats();
+
+        // Initialize admin session
+        initAdminSession();
+
+        // Update admin UI based on authentication status
+        if (isAdminAuthenticated) {
+            document.getElementById('adminSettingsSection').style.display = 'block';
+            updateAdminUI();
+        }
     </script>
 </body>
 </html>
