@@ -685,7 +685,7 @@
         <div class="container">
             <div class="hero-banner">
                 <div class="glow-chip">Creative Finance Hub</div>
-                <div class="hero-title">BB billing </div>
+                <div class="hero-title">Multi-color billing, salary, and expense control</div>
                 <div class="hero-subtitle">
                     Track client work, team payouts, and business expenses from one polished workspace built for Beacon blitz. The dashboard now brings billing operations and overhead tracking into the same flow.
                 </div>
@@ -902,9 +902,20 @@
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Salary Amount *</label>
-                                <input type="number" class="form-input" id="salaryAmount" placeholder="25000" step="0.01" required>
+                                <label class="form-label">Total Salary *</label>
+                                <input type="number" class="form-input" id="salaryTotalSalary" placeholder="25000" step="0.01" required>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label">Advance Payment *</label>
+                                <input type="number" class="form-input" id="salaryAdvancePayment" placeholder="10000" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Balance</label>
+                                <input type="number" class="form-input" id="salaryCurrentBalance" readonly style="background: var(--bg-light);">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label">Payment Mode</label>
                                 <select class="form-select" id="salaryMode">
@@ -934,9 +945,19 @@
 
                 <div class="stats-grid">
                     <div class="card">
-                        <div class="card-title">Total Salary Payout</div>
-                        <div class="card-value" id="salaryTotalAmount">Rs0</div>
-                        <div class="card-subtitle">All staff salary records</div>
+                        <div class="card-title">Total Salary</div>
+                        <div class="card-value" id="salaryTotalSalaryCard">Rs0</div>
+                        <div class="card-subtitle">Overall salary commitment</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Advance Payment</div>
+                        <div class="card-value" id="salaryAdvancePaymentCard">Rs0</div>
+                        <div class="card-subtitle">Amount already paid</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Current Balance</div>
+                        <div class="card-value" id="salaryCurrentBalanceCard">Rs0</div>
+                        <div class="card-subtitle">Remaining salary due</div>
                     </div>
                     <div class="card">
                         <div class="card-title">Staff Records</div>
@@ -955,15 +976,17 @@
                                 <th>Date</th>
                                 <th>Staff Name</th>
                                 <th>Role</th>
+                                <th>Total Salary</th>
+                                <th>Advance Payment</th>
+                                <th>Current Balance</th>
                                 <th>Mode</th>
-                                <th>Amount</th>
                                 <th>Reference</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="salaryTableBody">
                             <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                <td colspan="9" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
                                     No salary entries yet.
                                 </td>
                             </tr>
@@ -1260,6 +1283,8 @@
         // Calculate amount on input change
         document.getElementById('entryHours').addEventListener('input', calculateAmount);
         document.getElementById('entryRate').addEventListener('input', calculateAmount);
+        document.getElementById('salaryTotalSalary').addEventListener('input', calculateSalaryBalance);
+        document.getElementById('salaryAdvancePayment').addEventListener('input', calculateSalaryBalance);
         document.getElementById('entryCompany').addEventListener('change', toggleNewCompanyInput);
         document.getElementById('reportDateFilter').addEventListener('change', toggleCustomReportDates);
 
@@ -1268,6 +1293,13 @@
             const rate = parseFloat(document.getElementById('entryRate').value) || 0;
             const amount = hours * rate;
             document.getElementById('entryAmount').value = amount.toFixed(2);
+        }
+
+        function calculateSalaryBalance() {
+            const totalSalary = parseFloat(document.getElementById('salaryTotalSalary').value) || 0;
+            const advancePayment = parseFloat(document.getElementById('salaryAdvancePayment').value) || 0;
+            const currentBalance = Math.max(totalSalary - advancePayment, 0);
+            document.getElementById('salaryCurrentBalance').value = currentBalance.toFixed(2);
         }
 
         // File upload handling
@@ -1471,7 +1503,7 @@
 
         function updateHeroSummary() {
             const revenue = workEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const salaryTotal = salaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const salaryTotal = salaryEntries.reduce((sum, entry) => sum + entry.advancePayment, 0);
             const expenseTotal = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
             const netBalance = revenue - salaryTotal - expenseTotal;
 
@@ -1487,13 +1519,20 @@
             const date = document.getElementById('salaryDate').value;
             const staffName = document.getElementById('salaryStaffName').value.trim();
             const role = document.getElementById('salaryRole').value.trim();
-            const amount = parseFloat(document.getElementById('salaryAmount').value);
+            const totalSalary = parseFloat(document.getElementById('salaryTotalSalary').value);
+            const advancePayment = parseFloat(document.getElementById('salaryAdvancePayment').value);
             const mode = document.getElementById('salaryMode').value;
             const reference = document.getElementById('salaryReference').value.trim();
             const notes = document.getElementById('salaryNotes').value.trim();
+            const currentBalance = Math.max((totalSalary || 0) - (advancePayment || 0), 0);
 
-            if (!staffName || !Number.isFinite(amount)) {
-                alert('Please enter a valid staff name and salary amount.');
+            if (!staffName || !Number.isFinite(totalSalary) || !Number.isFinite(advancePayment)) {
+                alert('Please enter valid salary details.');
+                return;
+            }
+
+            if (advancePayment > totalSalary) {
+                alert('Advance payment cannot be more than total salary.');
                 return;
             }
 
@@ -1502,7 +1541,9 @@
                 date,
                 staffName,
                 role,
-                amount,
+                totalSalary,
+                advancePayment,
+                currentBalance,
                 mode,
                 reference,
                 notes
@@ -1518,7 +1559,9 @@
             document.getElementById('salaryDate').valueAsDate = new Date();
             document.getElementById('salaryStaffName').value = '';
             document.getElementById('salaryRole').value = '';
-            document.getElementById('salaryAmount').value = '';
+            document.getElementById('salaryTotalSalary').value = '';
+            document.getElementById('salaryAdvancePayment').value = '';
+            document.getElementById('salaryCurrentBalance').value = '';
             document.getElementById('salaryMode').value = 'Bank Transfer';
             document.getElementById('salaryReference').value = '';
             document.getElementById('salaryNotes').value = '';
@@ -1526,13 +1569,17 @@
 
         function displaySalaryEntries() {
             const tbody = document.getElementById('salaryTableBody');
-            const totalAmount = salaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalSalary = salaryEntries.reduce((sum, entry) => sum + entry.totalSalary, 0);
+            const totalAdvance = salaryEntries.reduce((sum, entry) => sum + entry.advancePayment, 0);
+            const totalBalance = salaryEntries.reduce((sum, entry) => sum + entry.currentBalance, 0);
 
-            document.getElementById('salaryTotalAmount').textContent = 'Rs' + totalAmount.toFixed(2);
+            document.getElementById('salaryTotalSalaryCard').textContent = 'Rs' + totalSalary.toFixed(2);
+            document.getElementById('salaryAdvancePaymentCard').textContent = 'Rs' + totalAdvance.toFixed(2);
+            document.getElementById('salaryCurrentBalanceCard').textContent = 'Rs' + totalBalance.toFixed(2);
             document.getElementById('salaryRecordCount').textContent = salaryEntries.length;
 
             if (salaryEntries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No salary entries yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No salary entries yet.</td></tr>';
                 return;
             }
 
@@ -1541,8 +1588,10 @@
                     <td>${entry.date}</td>
                     <td><strong>${entry.staffName}</strong></td>
                     <td>${entry.role || '-'}</td>
+                    <td class="amount-value">Rs${entry.totalSalary.toFixed(2)}</td>
+                    <td>Rs${entry.advancePayment.toFixed(2)}</td>
+                    <td>Rs${entry.currentBalance.toFixed(2)}</td>
                     <td>${entry.mode}</td>
-                    <td class="amount-value">Rs${entry.amount.toFixed(2)}</td>
                     <td>${entry.reference || '-'}</td>
                     <td><button class="action-btn" onclick="deleteSalaryEntry(${index})">Delete</button></td>
                 </tr>
@@ -1990,7 +2039,7 @@
             });
 
             const averageRate = totalHours ? totalAmount / totalHours : 0;
-            const totalSalary = filteredSalaryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalSalary = filteredSalaryEntries.reduce((sum, entry) => sum + entry.advancePayment, 0);
             const totalExpense = filteredExpenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
             const netBalance = totalAmount - totalSalary - totalExpense;
 
