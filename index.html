@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         :root {
             --primary: #1e5a8e;
             --primary-light: #2a7ab8;
@@ -826,7 +826,7 @@
         <div class="container">
             <div class="hero-banner">
                 <div class="glow-chip">Creative Finance Hub</div>
-                <div class="hero-title">BB billing</div>
+                <div class="hero-title">BB BIlling</div>
                 <div class="hero-subtitle">
                     Track client work, team payouts, and business expenses from one polished workspace built for Beacon blitz. The dashboard now brings billing operations and overhead tracking into the same flow.
                 </div>
@@ -1322,7 +1322,7 @@
 
                     <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            Sync Existing Data uploads the current browser data to Firebase in one snapshot. It includes work entries, salary records, expense records, and saved company names.
+                            Sync Existing Data uploads the current browser data to Firebase as a manual backup snapshot. It includes work entries, salary records, expense records, and saved company names.
                         </p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                             <button class="btn btn-primary" type="button" onclick="saveFirebaseSettings()">Save Firebase Settings</button>
@@ -1332,7 +1332,7 @@
 
                     <div style="margin-top: 1.5rem; padding: 1.5rem; background: #eefaf1; border: 2px solid #d8efdf; border-radius: 8px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            This sync uses the Firebase Realtime Database REST API and writes a full JSON backup into the `billingData` path.
+                            This uses the Firebase Realtime Database REST API and writes a full JSON backup into the `billingData` path. It does not automatically load shared live updates from other users.
                         </p>
                         <div id="firebaseStatus" style="margin-top: 0.75rem; font-size: 13px; color: var(--text-secondary);">
                             No Firebase database URL saved yet.
