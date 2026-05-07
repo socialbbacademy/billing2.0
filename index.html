@@ -1343,6 +1343,14 @@
         document.getElementById('salaryDate').valueAsDate = new Date();
         document.getElementById('expenseDate').valueAsDate = new Date();
 
+        // Date format helper: yyyy-mm-dd → dd/mm/yyyy
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
         // Debounce utility for input handlers
         function debounce(fn, ms) {
             let timer;
@@ -1666,7 +1674,7 @@
 
             tbody.innerHTML = salaryEntries.map((entry, index) => `
                 <tr>
-                    <td>${entry.date}</td>
+                    <td>${formatDate(entry.date)}</td>
                     <td><strong>${entry.staffName}</strong></td>
                     <td>${entry.role || '-'}</td>
                     <td class="amount-value">Rs${entry.totalSalary.toFixed(2)}</td>
@@ -1753,7 +1761,7 @@
 
             tbody.innerHTML = expenseEntries.map((entry, index) => `
                 <tr>
-                    <td>${entry.date}</td>
+                    <td>${formatDate(entry.date)}</td>
                     <td>${entry.category}</td>
                     <td><strong>${entry.title}</strong></td>
                     <td>${entry.vendor || '-'}</td>
@@ -1906,7 +1914,7 @@
 
             tbody.innerHTML = workEntries.map((entry, index) => `
                 <tr>
-                    <td>${entry.date}</td>
+                    <td>${formatDate(entry.date)}</td>
                     <td><strong>${entry.company}</strong></td>
                     <td>${entry.work}</td>
                     <td>${entry.hours} hrs</td>
