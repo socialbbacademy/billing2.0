@@ -630,8 +630,17 @@
             }
         }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="display:flex; position:fixed; inset:0; background:rgba(30,33,72,0.7); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:1rem;">
+        <div style="width:48px;height:48px;border:5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+        <div id="loadingMsg" style="color:white;font-size:16px;font-weight:600;font-family:sans-serif;">Loading...</div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
@@ -1259,16 +1268,75 @@
     </div>
 
     <script>
-        // Initialize
-        const STORAGE_KEY = 'workEntries';
-        const SALARY_STORAGE_KEY = 'salaryEntries';
-        const EXPENSE_STORAGE_KEY = 'expenseEntries';
-        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
+        // ── Firebase Setup ──────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoNwaiYyR_UQDMajKFqUJikQ0u468P_OE",
+            databaseURL: "https://beacon-blitz-default-rtdb.firebaseio.com",
+            projectId: "beacon-blitz"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ── App State ───────────────────────────────────────────────────
         const COMPANY_OPTIONS_KEY = 'companyOptions';
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
-        let workEntries = loadEntriesFromStorage();
-        let salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
-        let expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
+        let workEntries = [];
+        let salaryEntries = [];
+        let expenseEntries = [];
+
+        // Show loading overlay while Firebase loads
+        function showLoading(msg) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingMsg').textContent = msg || 'Loading data...';
+        }
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // ── Firebase Read (real-time listeners) ─────────────────────────
+        function initFirebaseListeners() {
+            showLoading('Firebase-ൽ നിന്ന് data load ചെയ്യുന്നു...');
+
+            db.ref('workEntries').on('value', snapshot => {
+                workEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
+                updateAllStats();
+                hideLoading();
+            });
+
+            db.ref('salaryEntries').on('value', snapshot => {
+                salaryEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
+                updateAllStats();
+            });
+
+            db.ref('expenseEntries').on('value', snapshot => {
+                expenseEntries = snapshot.val() ? Object.values(snapshot.val()) : [];
+                updateAllStats();
+            });
+        }
+
+        // ── Firebase Write Helpers ───────────────────────────────────────
+        function saveEntriesToStorage() {
+            const obj = {};
+            workEntries.forEach(e => { obj[e.id] = e; });
+            db.ref('workEntries').set(obj);
+        }
+
+        function saveSalaryEntriesToStorage() {
+            const obj = {};
+            salaryEntries.forEach(e => { obj[e.id] = e; });
+            db.ref('salaryEntries').set(obj);
+        }
+
+        function saveExpenseEntriesToStorage() {
+            const obj = {};
+            expenseEntries.forEach(e => { obj[e.id] = e; });
+            db.ref('expenseEntries').set(obj);
+        }
+
+        // Legacy stubs (Google Sheets sync kept but optional)
+        const GOOGLE_SHEET_URL_KEY = 'googleSheetWebAppUrl';
+        function loadCollectionFromStorage(key) { return []; }
+        function loadEntriesFromStorage() { return []; }
 
         // Set today's date as default
         document.getElementById('entryDate').valueAsDate = new Date();
@@ -1809,10 +1877,7 @@
             workEntries.push(entry);
             saveEntriesToStorage();
             populateReportCompanyFilter();
-
-            const sheetSynced = await syncEntriesToGoogleSheet();
-
-            alert(sheetSynced ? 'Entry saved and Google Sheet updated.' : 'Entry saved successfully.');
+            alert('Entry saved successfully! ✅');
             resetForm();
             updateAllStats();
         }
@@ -1856,10 +1921,9 @@
         }
 
         async function deleteEntry(index) {
-            if (confirm('Delete this entry?')) {
+            if (confirm('ഈ entry delete ചെയ്യണോ?')) {
                 workEntries.splice(index, 1);
                 saveEntriesToStorage();
-                await syncEntriesToGoogleSheet();
                 updateAllStats();
             }
         }
@@ -2094,31 +2158,44 @@
         }
 
         function loadDataFromStorage() {
-            _companyOptionsCache = null; // invalidate cache
-            workEntries = loadEntriesFromStorage();
-            salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
-            expenseEntries = loadCollectionFromStorage(EXPENSE_STORAGE_KEY);
-            updateAllStats();
-            alert('Data refreshed.');
+            _companyOptionsCache = null;
+            showLoading('Data refresh ചെയ്യുന്നു...');
+            // Firebase listeners will auto-update; just force a re-read
+            db.ref('workEntries').once('value', snap => {
+                workEntries = snap.val() ? Object.values(snap.val()) : [];
+                db.ref('salaryEntries').once('value', s2 => {
+                    salaryEntries = s2.val() ? Object.values(s2.val()) : [];
+                    db.ref('expenseEntries').once('value', s3 => {
+                        expenseEntries = s3.val() ? Object.values(s3.val()) : [];
+                        updateAllStats();
+                        hideLoading();
+                        alert('Data refreshed.');
+                    });
+                });
+            });
         }
 
         async function clearAllData() {
-            if (confirm('Are you sure? This will delete all entries permanently!')) {
+            if (confirm('ഉറപ്പാണോ? എല്ലാ entries ഉം permanently delete ആകും!')) {
                 workEntries = [];
-                saveEntriesToStorage();
-                await syncEntriesToGoogleSheet();
+                await db.ref('workEntries').remove();
                 alert('All data cleared.');
                 updateAllStats();
             }
         }
 
-        // Initial load
-        populateEntryCompanyOptions();
-        document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
-        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded. New changes will sync automatically.' : 'No Google Sheet URL saved yet. Entries are still saved in this browser.');
+        // ── App Startup ─────────────────────────────────────────────────
+        document.getElementById('entryDate').valueAsDate = new Date();
+        document.getElementById('salaryDate').valueAsDate = new Date();
+        document.getElementById('expenseDate').valueAsDate = new Date();
+        if (document.getElementById('googleSheetUrl')) {
+            document.getElementById('googleSheetUrl').value = loadGoogleSheetUrl();
+        }
+        setSheetStatus(loadGoogleSheetUrl() ? 'Google Sheet URL loaded.' : 'Firebase ഉപയോഗിക്കുന്നു — data cloud-ൽ save ആകും.');
         toggleNewCompanyInput();
         toggleCustomReportDates();
-        updateAllStats();
+        populateEntryCompanyOptions();
+        initFirebaseListeners(); // 🔥 Start Firebase
     </script>
 </body>
 </html>
