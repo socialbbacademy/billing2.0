@@ -1491,18 +1491,19 @@
                     </div>
                 </div>
 
-                <!-- Monthly Bill Generation -->
+                <!-- Monthly + Customer Bill Generation -->
                 <div class="form-section" style="border: 2px solid #5b5fef; background: linear-gradient(135deg, rgba(91,95,239,0.05), rgba(255,77,141,0.04));">
-                    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+                    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
                         <span style="font-size:22px;">📅</span>
-                        <h3 style="color: #261c53; font-size:20px; font-weight:800; letter-spacing:-0.01em;">Monthly Bill Generation</h3>
+                        <h3 style="color: #261c53; font-size:20px; font-weight:800; letter-spacing:-0.01em;">Monthly + Customer Bill Generation</h3>
                         <span style="margin-left:auto; background: linear-gradient(135deg,#5b5fef,#ff4d8d); color:#fff; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:0.06em;">New</span>
                     </div>
-                    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:1.5rem; line-height:1.6;">Select a month and year to generate invoices that include only entries from that period. Great for monthly client billing cycles.</p>
-                    <div class="form-grid" style="max-width:500px;">
+                    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:1.5rem; line-height:1.6;">Filter by month/year and optionally a specific customer to generate targeted invoices for any billing cycle.</p>
+
+                    <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Month</label>
-                            <select class="form-select" id="monthlyBillMonth">
+                            <select class="form-select" id="monthlyBillMonth" onchange="refreshMonthlyCustomerDropdown()">
                                 <option value="0">January</option>
                                 <option value="1">February</option>
                                 <option value="2">March</option>
@@ -1519,16 +1520,41 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Year</label>
-                            <select class="form-select" id="monthlyBillYear"></select>
+                            <select class="form-select" id="monthlyBillYear" onchange="refreshMonthlyCustomerDropdown()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Customer / Company</label>
+                            <select class="form-select" id="monthlyBillCustomer" onchange="previewMonthlyStats()">
+                                <option value="__all__">— All Customers —</option>
+                            </select>
                         </div>
                     </div>
-                    <div id="monthlyBillPreviewStats" style="margin:1rem 0; padding:1rem; background:rgba(91,95,239,0.07); border-radius:10px; font-size:13px; color:#374151; display:none;"></div>
-                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+
+                    <!-- Live preview stats card -->
+                    <div id="monthlyBillPreviewStats" style="margin:1.2rem 0 0; padding:1rem 1.2rem; background:rgba(91,95,239,0.07); border:1px solid rgba(91,95,239,0.15); border-radius:12px; font-size:13px; color:#374151; display:none; line-height:1.9;"></div>
+
+                    <!-- Per-customer breakdown table (shown when All Customers selected) -->
+                    <div id="monthlyCustomerBreakdown" style="display:none; margin-top:1.2rem; overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                            <thead>
+                                <tr style="background:linear-gradient(135deg,rgba(91,95,239,0.12),rgba(255,77,141,0.08));">
+                                    <th style="padding:10px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#374151; border-bottom:2px solid #e5e7eb;">Customer</th>
+                                    <th style="padding:10px 12px; text-align:center; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#374151; border-bottom:2px solid #e5e7eb;">Entries</th>
+                                    <th style="padding:10px 12px; text-align:center; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#374151; border-bottom:2px solid #e5e7eb;">Hours/Qty</th>
+                                    <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#374151; border-bottom:2px solid #e5e7eb;">Amount</th>
+                                    <th style="padding:10px 12px; text-align:center; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#374151; border-bottom:2px solid #e5e7eb;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyCustomerBreakdownBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.2rem;">
                         <button class="btn btn-primary" type="button" onclick="generateMonthlyBills()">
-                            📄 Generate Monthly Bills
+                            📄 Generate Bill
                         </button>
                         <button class="btn btn-secondary" type="button" onclick="previewMonthlyStats()">
-                            📊 Preview Month Stats
+                            🔄 Refresh Preview
                         </button>
                     </div>
                 </div>
@@ -3331,59 +3357,135 @@
                 if (y === currentYear) opt.selected = true;
                 yearSel.appendChild(opt);
             }
+            refreshMonthlyCustomerDropdown();
         }
 
-        function getMonthlyFilteredEntries() {
+        function getMonthlyFilteredEntries(customerOverride) {
             const month = parseInt(document.getElementById('monthlyBillMonth').value);
             const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const customer = customerOverride !== undefined ? customerOverride : document.getElementById('monthlyBillCustomer').value;
             return workEntries.filter(entry => {
+                if (!entry.date) return false;
+                const d = new Date(entry.date);
+                if (d.getMonth() !== month || d.getFullYear() !== year) return false;
+                if (customer !== '__all__' && entry.company !== customer) return false;
+                return true;
+            });
+        }
+
+        function refreshMonthlyCustomerDropdown() {
+            const month = parseInt(document.getElementById('monthlyBillMonth').value);
+            const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const monthEntries = workEntries.filter(entry => {
                 if (!entry.date) return false;
                 const d = new Date(entry.date);
                 return d.getMonth() === month && d.getFullYear() === year;
             });
+            const companies = [...new Set(monthEntries.map(e => e.company).filter(Boolean))].sort();
+            const sel = document.getElementById('monthlyBillCustomer');
+            const prev = sel.value;
+            sel.innerHTML = '<option value="__all__">— All Customers —</option>';
+            companies.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                sel.appendChild(opt);
+            });
+            if (companies.includes(prev)) sel.value = prev;
+            previewMonthlyStats();
         }
 
         function previewMonthlyStats() {
             const month = parseInt(document.getElementById('monthlyBillMonth').value);
             const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const customer = document.getElementById('monthlyBillCustomer').value;
             const monthName = new Date(year, month, 1).toLocaleString('en-IN', { month: 'long' });
             const filtered = getMonthlyFilteredEntries();
             const statsEl = document.getElementById('monthlyBillPreviewStats');
+            const breakdownDiv = document.getElementById('monthlyCustomerBreakdown');
+            const breakdownBody = document.getElementById('monthlyCustomerBreakdownBody');
+
             if (filtered.length === 0) {
                 statsEl.style.display = 'block';
-                statsEl.innerHTML = '<span style="color:#e74c3c;">⚠️ No entries found for <strong>' + monthName + ' ' + year + '</strong>. Please add entries for this period first.</span>';
+                statsEl.innerHTML = '⚠️ <strong>No entries</strong> found for <strong>' + monthName + ' ' + year + (customer !== '__all__' ? ' — ' + customer : '') + '</strong>.';
+                breakdownDiv.style.display = 'none';
                 return;
             }
+
             const totalHours = filtered.reduce((s, e) => s + e.hours, 0);
             const totalAmount = filtered.reduce((s, e) => s + e.amount, 0);
-            const companies = [...new Set(filtered.map(e => e.company))];
-            statsEl.style.display = 'block';
-            statsEl.innerHTML =
-                '<strong style="font-size:14px;">📅 ' + monthName + ' ' + year + ' — Summary</strong><br><br>' +
-                '<span>🏢 Companies: <strong>' + companies.length + '</strong> (' + companies.join(', ') + ')</span><br>' +
-                '<span>📋 Entries: <strong>' + filtered.length + '</strong></span><br>' +
-                '<span>⏱ Total Hours/Qty: <strong>' + totalHours.toFixed(1) + '</strong></span><br>' +
-                '<span>💰 Total Amount: <strong style="color:#5b5fef;">Rs' + totalAmount.toFixed(2) + '</strong></span>';
+
+            if (customer === '__all__') {
+                // Show summary + per-customer breakdown table
+                const companies = [...new Set(filtered.map(e => e.company))];
+                statsEl.style.display = 'block';
+                statsEl.innerHTML =
+                    '📅 <strong>' + monthName + ' ' + year + '</strong> &nbsp;|&nbsp; ' +
+                    '🏢 <strong>' + companies.length + '</strong> customer(s) &nbsp;|&nbsp; ' +
+                    '📋 <strong>' + filtered.length + '</strong> entries &nbsp;|&nbsp; ' +
+                    '⏱ <strong>' + totalHours.toFixed(1) + '</strong> hrs &nbsp;|&nbsp; ' +
+                    '💰 <strong style="color:#5b5fef;">Rs' + totalAmount.toFixed(2) + '</strong> total';
+
+                breakdownBody.innerHTML = companies.map((company, idx) => {
+                    const ce = filtered.filter(e => e.company === company);
+                    const ch = ce.reduce((s, e) => s + e.hours, 0);
+                    const ca = ce.reduce((s, e) => s + e.amount, 0);
+                    return '<tr style="border-bottom:1px solid #f0f0f0;">' +
+                        '<td style="padding:10px 12px; font-weight:600;">' + company + '</td>' +
+                        '<td style="padding:10px 12px; text-align:center;">' + ce.length + '</td>' +
+                        '<td style="padding:10px 12px; text-align:center;">' + ch.toFixed(1) + '</td>' +
+                        '<td style="padding:10px 12px; text-align:right; color:#5b5fef; font-weight:700;">Rs' + ca.toFixed(2) + '</td>' +
+                        '<td style="padding:10px 12px; text-align:center;">' +
+                        '<button class="action-btn" onclick=\'generateSingleCustomerMonthlyBill(' + JSON.stringify(company) + ')\'>📄 Bill</button>' +
+                        '</td></tr>';
+                }).join('');
+                breakdownDiv.style.display = 'block';
+            } else {
+                // Single customer view
+                statsEl.style.display = 'block';
+                statsEl.innerHTML =
+                    '📅 <strong>' + monthName + ' ' + year + '</strong> — <strong>' + customer + '</strong> &nbsp;|&nbsp; ' +
+                    '📋 <strong>' + filtered.length + '</strong> entries &nbsp;|&nbsp; ' +
+                    '⏱ <strong>' + totalHours.toFixed(1) + '</strong> hrs &nbsp;|&nbsp; ' +
+                    '💰 <strong style="color:#5b5fef;">Rs' + totalAmount.toFixed(2) + '</strong>';
+                breakdownDiv.style.display = 'none';
+            }
+        }
+
+        function generateSingleCustomerMonthlyBill(company) {
+            const month = parseInt(document.getElementById('monthlyBillMonth').value);
+            const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const monthName = new Date(year, month, 1).toLocaleString('en-IN', { month: 'long' });
+            const companyEntries = getMonthlyFilteredEntries(company);
+            if (!companyEntries.length) {
+                alert('No entries for ' + company + ' in ' + monthName + ' ' + year + '.');
+                return;
+            }
+            renderInvoicePreview([buildInvoiceDocument(companyEntries, company, 1, monthName, year)]);
         }
 
         function generateMonthlyBills() {
             const month = parseInt(document.getElementById('monthlyBillMonth').value);
             const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const customer = document.getElementById('monthlyBillCustomer').value;
             const monthName = new Date(year, month, 1).toLocaleString('en-IN', { month: 'long' });
             const filtered = getMonthlyFilteredEntries();
 
             if (filtered.length === 0) {
-                alert('No entries found for ' + monthName + ' ' + year + '. Please add work entries for this month first.');
+                alert('No entries found for ' + monthName + ' ' + year + (customer !== '__all__' ? ' — ' + customer : '') + '. Please add work entries first.');
                 return;
             }
 
-            const companies = [...new Set(filtered.map(e => e.company).filter(Boolean))];
-            const documents = companies.map((company, index) => {
-                const companyEntries = filtered.filter(e => e.company === company);
-                return buildInvoiceDocument(companyEntries, company, index + 1, monthName, year);
-            });
-
-            renderInvoicePreview(documents);
+            if (customer === '__all__') {
+                const companies = [...new Set(filtered.map(e => e.company).filter(Boolean))];
+                const documents = companies.map((company, index) => {
+                    const companyEntries = filtered.filter(e => e.company === company);
+                    return buildInvoiceDocument(companyEntries, company, index + 1, monthName, year);
+                });
+                renderInvoicePreview(documents);
+            } else {
+                renderInvoicePreview([buildInvoiceDocument(filtered, customer, 1, monthName, year)]);
+            }
         }
 
         function generateBillForCompany(company) {
