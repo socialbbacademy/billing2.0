@@ -1491,6 +1491,48 @@
                     </div>
                 </div>
 
+                <!-- Monthly Bill Generation -->
+                <div class="form-section" style="border: 2px solid #5b5fef; background: linear-gradient(135deg, rgba(91,95,239,0.05), rgba(255,77,141,0.04));">
+                    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+                        <span style="font-size:22px;">📅</span>
+                        <h3 style="color: #261c53; font-size:20px; font-weight:800; letter-spacing:-0.01em;">Monthly Bill Generation</h3>
+                        <span style="margin-left:auto; background: linear-gradient(135deg,#5b5fef,#ff4d8d); color:#fff; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:0.06em;">New</span>
+                    </div>
+                    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:1.5rem; line-height:1.6;">Select a month and year to generate invoices that include only entries from that period. Great for monthly client billing cycles.</p>
+                    <div class="form-grid" style="max-width:500px;">
+                        <div class="form-group">
+                            <label class="form-label">Month</label>
+                            <select class="form-select" id="monthlyBillMonth">
+                                <option value="0">January</option>
+                                <option value="1">February</option>
+                                <option value="2">March</option>
+                                <option value="3">April</option>
+                                <option value="4">May</option>
+                                <option value="5">June</option>
+                                <option value="6">July</option>
+                                <option value="7">August</option>
+                                <option value="8">September</option>
+                                <option value="9">October</option>
+                                <option value="10">November</option>
+                                <option value="11">December</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <select class="form-select" id="monthlyBillYear"></select>
+                        </div>
+                    </div>
+                    <div id="monthlyBillPreviewStats" style="margin:1rem 0; padding:1rem; background:rgba(91,95,239,0.07); border-radius:10px; font-size:13px; color:#374151; display:none;"></div>
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+                        <button class="btn btn-primary" type="button" onclick="generateMonthlyBills()">
+                            📄 Generate Monthly Bills
+                        </button>
+                        <button class="btn btn-secondary" type="button" onclick="previewMonthlyStats()">
+                            📊 Preview Month Stats
+                        </button>
+                    </div>
+                </div>
+
                 <div class="form-section">
                     <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Bill Summary</h3>
                     <div class="stats-grid" id="billStats">
@@ -3065,6 +3107,7 @@
                 displayEntries();
             } else if (page === 'generate-bills') {
                 updateBillStats();
+                initMonthlyBillSelectors();
             } else if (page === 'staff-salary') {
                 displaySalaryEntries();
             } else if (page === 'expenses') {
@@ -3141,11 +3184,14 @@
             document.getElementById('invoicePreviewSection').classList.add('hidden');
         }
 
-        function buildInvoiceDocument(companyEntries, company, invoiceIndex = 1) {
+        function buildInvoiceDocument(companyEntries, company, invoiceIndex = 1, billingMonthName, billingYear) {
             const totalHours = companyEntries.reduce((sum, entry) => sum + Number(entry.hours || 0), 0);
             const totalAmount = companyEntries.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
             const issueDate = new Date();
-            const invoiceNo = `INV-${issueDate.getFullYear()}${String(issueDate.getMonth() + 1).padStart(2, '0')}-${String(invoiceIndex).padStart(3, '0')}`;
+            const monthSuffix = billingMonthName && billingYear ? String(new Date(billingYear, ['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(billingMonthName), 1).getMonth() + 1).padStart(2, '0') : String(issueDate.getMonth() + 1).padStart(2, '0');
+            const yearSuffix = billingYear || issueDate.getFullYear();
+            const invoiceNo = 'INV-' + yearSuffix + monthSuffix + '-' + String(invoiceIndex).padStart(3, '0');
+            const billingPeriodLabel = billingMonthName && billingYear ? billingMonthName + ' ' + billingYear : null;
             const logoMarkup = invoiceSettings.companyLogo
                 ? `<img src="${invoiceSettings.companyLogo}" alt="Company logo" class="invoice-logo">`
                 : '';
@@ -3176,6 +3222,7 @@
                         <div class="invoice-meta-header">
                             <strong>Invoice No:</strong> ${escapeHtml(invoiceNo)}<br>
                             <strong>Issue Date:</strong> ${escapeHtml(issueDate.toLocaleDateString('en-IN'))}<br>
+                            ${billingPeriodLabel ? `<strong>Billing Period:</strong> ${escapeHtml(billingPeriodLabel)}<br>` : ''}
                             <strong>Client:</strong> ${escapeHtml(company)}
                         </div>
                     </div>
@@ -3267,6 +3314,76 @@
             document.getElementById('invoicePreviewContainer').innerHTML = currentInvoicePrintMarkup;
             document.getElementById('invoicePreviewSection').classList.remove('hidden');
             document.getElementById('invoicePreviewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function initMonthlyBillSelectors() {
+            const now = new Date();
+            const monthSel = document.getElementById('monthlyBillMonth');
+            const yearSel = document.getElementById('monthlyBillYear');
+            if (!monthSel || !yearSel) return;
+            monthSel.value = now.getMonth();
+            yearSel.innerHTML = '';
+            const currentYear = now.getFullYear();
+            for (let y = currentYear - 3; y <= currentYear + 1; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (y === currentYear) opt.selected = true;
+                yearSel.appendChild(opt);
+            }
+        }
+
+        function getMonthlyFilteredEntries() {
+            const month = parseInt(document.getElementById('monthlyBillMonth').value);
+            const year = parseInt(document.getElementById('monthlyBillYear').value);
+            return workEntries.filter(entry => {
+                if (!entry.date) return false;
+                const d = new Date(entry.date);
+                return d.getMonth() === month && d.getFullYear() === year;
+            });
+        }
+
+        function previewMonthlyStats() {
+            const month = parseInt(document.getElementById('monthlyBillMonth').value);
+            const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const monthName = new Date(year, month, 1).toLocaleString('en-IN', { month: 'long' });
+            const filtered = getMonthlyFilteredEntries();
+            const statsEl = document.getElementById('monthlyBillPreviewStats');
+            if (filtered.length === 0) {
+                statsEl.style.display = 'block';
+                statsEl.innerHTML = '<span style="color:#e74c3c;">⚠️ No entries found for <strong>' + monthName + ' ' + year + '</strong>. Please add entries for this period first.</span>';
+                return;
+            }
+            const totalHours = filtered.reduce((s, e) => s + e.hours, 0);
+            const totalAmount = filtered.reduce((s, e) => s + e.amount, 0);
+            const companies = [...new Set(filtered.map(e => e.company))];
+            statsEl.style.display = 'block';
+            statsEl.innerHTML =
+                '<strong style="font-size:14px;">📅 ' + monthName + ' ' + year + ' — Summary</strong><br><br>' +
+                '<span>🏢 Companies: <strong>' + companies.length + '</strong> (' + companies.join(', ') + ')</span><br>' +
+                '<span>📋 Entries: <strong>' + filtered.length + '</strong></span><br>' +
+                '<span>⏱ Total Hours/Qty: <strong>' + totalHours.toFixed(1) + '</strong></span><br>' +
+                '<span>💰 Total Amount: <strong style="color:#5b5fef;">Rs' + totalAmount.toFixed(2) + '</strong></span>';
+        }
+
+        function generateMonthlyBills() {
+            const month = parseInt(document.getElementById('monthlyBillMonth').value);
+            const year = parseInt(document.getElementById('monthlyBillYear').value);
+            const monthName = new Date(year, month, 1).toLocaleString('en-IN', { month: 'long' });
+            const filtered = getMonthlyFilteredEntries();
+
+            if (filtered.length === 0) {
+                alert('No entries found for ' + monthName + ' ' + year + '. Please add work entries for this month first.');
+                return;
+            }
+
+            const companies = [...new Set(filtered.map(e => e.company).filter(Boolean))];
+            const documents = companies.map((company, index) => {
+                const companyEntries = filtered.filter(e => e.company === company);
+                return buildInvoiceDocument(companyEntries, company, index + 1, monthName, year);
+            });
+
+            renderInvoicePreview(documents);
         }
 
         function generateBillForCompany(company) {
@@ -3504,6 +3621,7 @@
             setFirebaseStatus('Connecting to shared Firebase data...');
             toggleNewCompanyInput();
             toggleCustomReportDates();
+            initMonthlyBillSelectors();
             updateAllStats();
 
             const loaded = await loadSharedData(false);
