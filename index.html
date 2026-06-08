@@ -1877,7 +1877,7 @@
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Firebase Realtime Database URL</label>
+                            <label class="form-label">Firebase Firestore Document</label>
                             <input type="text" class="form-input" id="firebaseDatabaseUrl" readonly style="background: var(--bg-light);">
                         </div>
                         <div class="form-group">
@@ -1898,7 +1898,7 @@
 
                     <div style="margin-top: 1.5rem; padding: 1.5rem; background: #eefaf1; border: 2px solid #d8efdf; border-radius: 8px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            Firebase polling refreshes this browser automatically so shared changes from other users appear here without manual re-entry.
+                            Firestore polling refreshes this browser automatically so shared changes from other users appear here without manual re-entry.
                         </p>
                         <div id="firebaseStatus" style="margin-top: 0.75rem; font-size: 13px; color: var(--text-secondary);">
                             Connecting to shared Firebase data...
@@ -1909,7 +1909,7 @@
                 <div class="card" style="background: #fef9e7; border-color: #f39c12; margin-top: 2rem;">
                     <div style="color: #f39c12; font-weight: 700; margin-bottom: 0.5rem;">Info</div>
                     <div style="font-size: 13px; color: var(--text-secondary);">
-                        Shared sync stores work entries, salary records, expense records, company names, and sync timestamps in Firebase.
+                        Shared sync stores work entries, salary records, expense records, company names, and sync timestamps in Cloud Firestore.
                     </div>
                 </div>
 
@@ -2179,8 +2179,10 @@
         const EXPENSE_STORAGE_KEY = 'expenseEntries';
         const COMPANY_OPTIONS_KEY = 'companyOptions';
         const INVOICE_SETTINGS_STORAGE_KEY = 'invoiceSettings';
-        const FIREBASE_DATABASE_URL = 'https://beacon-blitz-default-rtdb.firebaseio.com';
-        const FIREBASE_API_KEY = 'AIzaSyDoNwaiYyR_UQDMajKFqUJikQ0u468P_OE';
+        const FIREBASE_PROJECT_ID = 'bb-billing-55a6e';
+        const FIRESTORE_COLLECTION = 'billingData';
+        const FIRESTORE_DOCUMENT_ID = 'shared';
+        const FIREBASE_API_KEY = 'AIzaSyCc2DdzzxFU2WEqiOTmAQceNxEquyEXs0c';
         const FIREBASE_POLL_INTERVAL_MS = 10000;
         const FIREBASE_AUTH_CACHE_KEY = 'firebaseAnonymousAuth';
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
@@ -2464,9 +2466,35 @@
             return [...new Set([...(Array.isArray(companies) ? companies : []), ...DEFAULT_COMPANIES].filter(Boolean))].sort((a, b) => a.localeCompare(b));
         }
 
-        function getFirebaseEndpoint(authToken = '') {
-            const endpoint = `${FIREBASE_DATABASE_URL.replace(/\/+$/, '')}/billingData.json`;
-            return authToken ? `${endpoint}?auth=${encodeURIComponent(authToken)}` : endpoint;
+        function getFirebaseEndpoint() {
+            const projectId = encodeURIComponent(FIREBASE_PROJECT_ID);
+            const collection = encodeURIComponent(FIRESTORE_COLLECTION);
+            const documentId = encodeURIComponent(FIRESTORE_DOCUMENT_ID);
+            const apiKeyQuery = FIREBASE_API_KEY ? `?key=${encodeURIComponent(FIREBASE_API_KEY)}` : '';
+            return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collection}/${documentId}${apiKeyQuery}`;
+        }
+
+        function getFirestoreDocumentPath() {
+            return `${FIREBASE_PROJECT_ID}/${FIRESTORE_COLLECTION}/${FIRESTORE_DOCUMENT_ID}`;
+        }
+
+        function toFirestoreDocument(payload) {
+            return {
+                fields: {
+                    payload: { stringValue: JSON.stringify(payload) },
+                    syncedAt: { timestampValue: payload.syncedAt || new Date().toISOString() },
+                    source: { stringValue: payload.source || 'billtrack-browser-app' }
+                }
+            };
+        }
+
+        function fromFirestoreDocument(documentData) {
+            const payloadValue = documentData?.fields?.payload?.stringValue;
+            if (!payloadValue) {
+                return null;
+            }
+
+            return JSON.parse(payloadValue);
         }
 
         function getCachedFirebaseAuthToken() {
@@ -2534,11 +2562,15 @@
                 }
             };
 
-            if (body !== null) {
-                options.body = JSON.stringify(body);
+            if (authToken) {
+                options.headers.Authorization = `Bearer ${authToken}`;
             }
 
-            let response = await fetch(getFirebaseEndpoint(authToken), options);
+            if (body !== null) {
+                options.body = JSON.stringify(toFirestoreDocument(body));
+            }
+
+            let response = await fetch(getFirebaseEndpoint(), options);
             if ((response.status === 401 || response.status === 403) && authToken && !forceAuthRefresh) {
                 localStorage.removeItem(FIREBASE_AUTH_CACHE_KEY);
                 return fetchFirebaseJson(method, body, true);
@@ -2596,12 +2628,23 @@
         async function fetchSharedDataFromFirebase() {
             const response = await fetchFirebaseJson('GET');
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Firebase read failed with status ${response.status}: ${errorText}`);
+            if (response.status === 404) {
+                return {
+                    companies: normalizeCompanyOptions([]),
+                    workEntries: [],
+                    salaryEntries: [],
+                    expenseEntries: [],
+                    invoiceSettings: getDefaultInvoiceSettings()
+                };
             }
 
-            const data = await response.json();
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Firestore read failed with status ${response.status}: ${errorText}`);
+            }
+
+            const documentData = await response.json();
+            const data = fromFirestoreDocument(documentData);
             return {
                 companies: normalizeCompanyOptions(data?.companies),
                 workEntries: Array.isArray(data?.workEntries) ? data.workEntries : [],
@@ -3659,11 +3702,11 @@
         async function syncExistingDataToFirebase(showSuccessMessage = false) {
             try {
                 const payload = getFirebasePayload();
-                const response = await fetchFirebaseJson('PUT', payload);
+                const response = await fetchFirebaseJson('PATCH', payload);
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error(`Firebase sync failed with status ${response.status}: ${errorText}`);
+                    throw new Error(`Firestore sync failed with status ${response.status}: ${errorText}`);
                 }
 
                 lastFirebaseSnapshot = getCurrentSnapshotSignature(payload);
@@ -3793,8 +3836,8 @@
             const cachedPayload = getFirebasePayload();
             populateEntryCompanyOptions();
             populateInvoiceSettingsForm();
-            document.getElementById('firebaseDatabaseUrl').value = FIREBASE_DATABASE_URL;
-            setFirebaseStatus('Connecting to shared Firebase data...');
+            document.getElementById('firebaseDatabaseUrl').value = getFirestoreDocumentPath();
+            setFirebaseStatus('Connecting to shared Firestore data...');
             toggleNewCompanyInput();
             toggleCustomReportDates();
             initMonthlyBillSelectors();
