@@ -2182,6 +2182,7 @@
         const FIREBASE_DATABASE_URL = 'https://beacon-blitz-default-rtdb.firebaseio.com';
         const FIREBASE_API_KEY = 'AIzaSyDoNwaiYyR_UQDMajKFqUJikQ0u468P_OE';
         const FIREBASE_POLL_INTERVAL_MS = 10000;
+        const FIREBASE_AUTH_CACHE_KEY = 'firebaseAnonymousAuth';
         const DEFAULT_COMPANIES = ['Beacon blitz', 'Digital Pro Marketing', 'Creative Minds Studio'];
         let workEntries = loadEntriesFromStorage();
         let salaryEntries = loadCollectionFromStorage(SALARY_STORAGE_KEY);
@@ -2463,8 +2464,87 @@
             return [...new Set([...(Array.isArray(companies) ? companies : []), ...DEFAULT_COMPANIES].filter(Boolean))].sort((a, b) => a.localeCompare(b));
         }
 
-        function getFirebaseEndpoint() {
-            return `${FIREBASE_DATABASE_URL.replace(/\/+$/, '')}/billingData.json`;
+        function getFirebaseEndpoint(authToken = '') {
+            const endpoint = `${FIREBASE_DATABASE_URL.replace(/\/+$/, '')}/billingData.json`;
+            return authToken ? `${endpoint}?auth=${encodeURIComponent(authToken)}` : endpoint;
+        }
+
+        function getCachedFirebaseAuthToken() {
+            try {
+                const cachedAuth = JSON.parse(localStorage.getItem(FIREBASE_AUTH_CACHE_KEY) || 'null');
+                if (cachedAuth?.idToken && cachedAuth?.expiresAt && Date.now() < cachedAuth.expiresAt - 60000) {
+                    return cachedAuth.idToken;
+                }
+            } catch (error) {
+                console.warn('Unable to read cached Firebase auth token.', error);
+            }
+
+            localStorage.removeItem(FIREBASE_AUTH_CACHE_KEY);
+            return '';
+        }
+
+        async function getFirebaseAuthToken(forceRefresh = false) {
+            if (!forceRefresh) {
+                const cachedToken = getCachedFirebaseAuthToken();
+                if (cachedToken) {
+                    return cachedToken;
+                }
+            }
+
+            if (!FIREBASE_API_KEY) {
+                return '';
+            }
+
+            const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_API_KEY)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ returnSecureToken: true })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Firebase anonymous sign-in failed with status ${response.status}: ${errorText}`);
+            }
+
+            const authData = await response.json();
+            const expiresInSeconds = Number(authData.expiresIn || 3600);
+            localStorage.setItem(FIREBASE_AUTH_CACHE_KEY, JSON.stringify({
+                idToken: authData.idToken,
+                refreshToken: authData.refreshToken,
+                expiresAt: Date.now() + expiresInSeconds * 1000
+            }));
+
+            return authData.idToken || '';
+        }
+
+        async function fetchFirebaseJson(method, body = null, forceAuthRefresh = false) {
+            let authToken = '';
+            try {
+                authToken = await getFirebaseAuthToken(forceAuthRefresh);
+            } catch (error) {
+                console.warn('Firebase anonymous auth was unavailable, trying the database request without auth.', error);
+            }
+
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (body !== null) {
+                options.body = JSON.stringify(body);
+            }
+
+            let response = await fetch(getFirebaseEndpoint(authToken), options);
+            if ((response.status === 401 || response.status === 403) && authToken && !forceAuthRefresh) {
+                localStorage.removeItem(FIREBASE_AUTH_CACHE_KEY);
+                return fetchFirebaseJson(method, body, true);
+            }
+
+            return response;
         }
 
         function getCurrentSnapshotSignature(data) {
@@ -2514,12 +2594,11 @@
         }
 
         async function fetchSharedDataFromFirebase() {
-            const response = await fetch(getFirebaseEndpoint(), {
-                method: 'GET'
-            });
+            const response = await fetchFirebaseJson('GET');
 
             if (!response.ok) {
-                throw new Error(`Firebase read failed with status ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`Firebase read failed with status ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
@@ -3580,16 +3659,11 @@
         async function syncExistingDataToFirebase(showSuccessMessage = false) {
             try {
                 const payload = getFirebasePayload();
-                const response = await fetch(getFirebaseEndpoint(), {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
+                const response = await fetchFirebaseJson('PUT', payload);
 
                 if (!response.ok) {
-                    throw new Error(`Firebase sync failed with status ${response.status}`);
+                    const errorText = await response.text();
+                    throw new Error(`Firebase sync failed with status ${response.status}: ${errorText}`);
                 }
 
                 lastFirebaseSnapshot = getCurrentSnapshotSignature(payload);
